@@ -197,8 +197,8 @@ class Log_plot(tk.Frame):
             # Add line
             line = []
             line.append(log[0].strftime('%H:%M:%S'))
-            for i in range(self.y_len + 1): # Also writes heater value
-                line.append(log[i+1])
+            for i in log[1:]: # Also writes heater value
+                line.append(i)
             writer.writerow(line)
 
 
@@ -212,7 +212,6 @@ class Field_plot(Log_plot):
         self.y_axis = 'Field (T)'
         self.y_list = ['Current F', 'Set F', 'Peristent F']
         self.file_end = '_Field.log'
-        Log_plot.__init__(self, parent, ports)
 
         # Create log directory
         self.file_directory = os.path.join('log_files','field')
@@ -220,6 +219,8 @@ class Field_plot(Log_plot):
             os.mkdir('log_files')
             os.mkdir(self.file_directory)
         except: pass
+
+        Log_plot.__init__(self, parent, ports)
 
 
     def Update(self):
@@ -240,13 +241,14 @@ class Temperature_plot(Log_plot):
         self.y_axis = 'Temperature (K)'
         self.y_list = ['Current T', 'Set T']
         self.file_end = '_Temp.log'
-        Log_plot.__init__(self, parent, ports)
-        
+
         # Create log directory
         self.file_directory = os.path.join('log_files','temperature')
         try:
             os.mkdir(self.file_directory)
         except: pass
+
+        Log_plot.__init__(self, parent, ports)
         
     
     def Update(self):
