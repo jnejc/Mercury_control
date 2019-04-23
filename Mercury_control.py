@@ -4,7 +4,7 @@ import tkinter as tk
 
 if __name__ == "__main__":
     '''Executes when this is the main aplication'''
-    print('I am main')
+    print('Starting main application Mercury_control')
 
     comports = com.ports.Ports()
 
