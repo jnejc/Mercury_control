@@ -287,31 +287,31 @@ if __name__ == "__main__":
     '''Executes if this is main application'''
     print(List_ports())
 
+    test = 0
     # Test particular port
-    """
-    A=Mercury('COM4')
-    A.Identify()
-    print(A.Find_daughters(test=True))
-    A.Build_daughters(test=True)
+    if test == 0:
+        A=Mercury('COM4')
+        A.Identify()
+        print(A.Find_daughters(test=True))
+        A.Build_daughters(test=True)
 
-    print(A.__dict__)
-    print('closing')
-    print(A.ser.is_open)
-    A.ser.close()
-    """
+        print(A.__dict__)
+        print('closing')
+        print(A.ser.is_open)
+        A.ser.close()
 
     # Test port importing
-    """
-    B = Ports()
-    print(B.__dict__)
-    B.ips.Identify()
-    print(B.ips.__dict__)
-    x = B.ips.Find_daughters()
-    print(x)
-    B.ips.Build_daughters()
-    print(B.ips.__dict__, '\n')
+    if test == 1:
+        B = Ports()
+        print(B.__dict__)
+        B.ips.Identify()
+        print(B.ips.__dict__)
+        x = B.ips.Find_daughters()
+        print(x)
+        B.ips.Build_daughters()
+        print(B.ips.__dict__, '\n')
 
-    print(B.ips.M2.__dict__)
-    print(B.ips.M1.read_options)
-    B.ips.M1.Read_option('VOLT')
-    """
+        print(B.ips.M2.__dict__)
+        print(B.ips.M1.read_options)
+        B.ips.M1.Read_option('VOLT')
+
