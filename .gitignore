@@ -5,3 +5,6 @@ __pycache__/
 
 # Local Log files created by running software
 log_files/
+
+# Vscode folder for virtual environment
+.vscode/
