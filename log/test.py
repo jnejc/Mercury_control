@@ -15,3 +15,5 @@ my_logger.error('This is an error!')
 my_logger.critical('Holy shit things are going critical!!!!')
 
 # This configuration seems to work.
+
+logging.debug('crap')
