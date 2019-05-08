@@ -8,6 +8,8 @@ from tkinter import messagebox
 from com.devices import Device
 from datetime import datetime
 
+import logging
+logger = logging.getLogger('log')     # Set the logger
 
 # Global variables
 READ_LEN = 200
@@ -23,13 +25,12 @@ class Comport():
         self.name = port
         self.ser = serial.Serial(port, timeout=0.1) # Fails if too short
         self.ser.close()
-        #print(self.ser.is_open)
 
 
     def __enter__(self):
         '''Opening of comport'''
         if self.ser.is_open:
-            print (self.name+': Why am i open?')
+            logger.warning(self.name+': Why am i open?')
         if not self.ser.is_open:
             self.ser.open()
         return self
@@ -38,7 +39,7 @@ class Comport():
     def __exit__(self, E_type, E_value, E_traceback):
         '''Closing of comport'''
         self.ser.close()
-        print('Closing: "'+self.name+'", Errors:',(E_type,E_value,E_traceback))
+        logger.info('Closing: "'+self.name+'", Errors:',(E_type,E_value,E_traceback))
         return (E_type,E_value,E_traceback)
 
 
@@ -48,7 +49,7 @@ class Comport():
         self.ser.write('*IDN?\n'.encode('utf-8'))
         x = self.ser.read(READ_LEN).decode('utf-8')
         self.ser.close()
-        print(self.name + ': ' + x)
+        logger.info(self.name + ': ' + x)
         return x
 
 
@@ -97,9 +98,7 @@ class Mercury(Comport):
             s = self.Read_direct('SYS:CAT')
         if s is not None:
             s = s.split(':DEV:')[1:]
-        #print(s)
         self.daughters = s
-        #return s
 
     
     def Build_daughters(self, test=False):
@@ -113,7 +112,6 @@ class Mercury(Comport):
         for d in daughters:
             name = d.split(':')[0]
             self.__dict__[name] = Device(self, 'DEV:'+ d)
-        #print(self.__dir__)
 
 
     def Read_direct(self, command, warn=True):
@@ -162,19 +160,19 @@ class Ports():
             split = s.split(':')
             
             if len(split) < 3:
-                print('Found port: '+port)
+                logger.info('Found port: '+port)
             elif split[2] == 'MERCURY IPS':
                 self.ips = Mercury(port)
-                print('Found IPS:', port)
+                logger.info('Found IPS:', port)
                 self.ips.Find_daughters()
                 self.ips.Build_daughters()
             elif split[2] == 'MERCURY ITC':
                 self.itc = Mercury(port)
                 self.itc.Find_daughters()
-                print('Found ITC:', port)
+                logger.info('Found ITC:', port)
                 self.itc.Build_daughters()
             else:
-                print('Found port: '+port)
+                logger.info('Found port: '+port)
 
     
     # iTC reading

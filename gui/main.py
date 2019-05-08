@@ -10,7 +10,6 @@ from gui.ips import IPS_frame
 from gui.log import Log_frame
 
 
-
 class Main_application(tk.Frame):
     '''Main frame holding the skeleton for all future frames'''
     def __init__(self, parent, ports):

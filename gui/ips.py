@@ -7,6 +7,9 @@ from tkinter import messagebox
 
 from gui.funct import Strip_T, List_sensors
 
+import logging
+logger = logging.getLogger('log')     # Set the logger
+
 class IPS_frame(tk.Frame):
     '''The controll frame for IPS'''
     def __init__(self, parent, ports):
@@ -56,7 +59,7 @@ class IPS_frame(tk.Frame):
 
     def Load_parameters(self):
         '''Talks to IPS and refreshes all values in entry boxes'''
-        print('Loading IPS parameters from:', self.frame_select.var_sens.get())
+        logger.info('Loading IPS parameters from:', self.frame_select.var_sens.get())
 
         flog = self.ports.Get_Fstatus(self.frame_select.var_sens.get())
         fset = self.ports.Get_Fset(self.frame_select.var_sens.get())
@@ -69,8 +72,6 @@ class IPS_frame(tk.Frame):
         self.frame_switch.Update(fmode[0])
         self.frame_ramp.Update(fmode[1])
         self.frame_sensors.Update(fsensors)
-
-        print('Finished updating')
 
 
 
@@ -134,7 +135,7 @@ class Status(tk.LabelFrame):
     
     def Update(self, flog):
         '''Updates values in entries from iPS'''
-        print('Updating IPS status')
+        logger.info('Updating IPS status')
         self.var_field.set(flog[1])
         self.var_fset.set(flog[2])
         self.var_voltage.set(flog[3])
@@ -188,12 +189,12 @@ class SetF(tk.LabelFrame):
 
     def Set(self):
         '''Confirms written values and sends to iPS'''
-        print('Setting Field')
+        logger.info('Setting Field')
 
 
     def Update(self, fset):
         '''Updates previously set values from iPS'''
-        print('Updating previously set field values from IPS')
+        logger.info('Updating previously set field values from IPS')
         self.var_set.set(Strip_T(fset[0]))
         self.var_rate.set(Strip_T(fset[1]))
 
@@ -235,21 +236,21 @@ class Switch(tk.LabelFrame):
 
     def Heater_switch(self):
         '''Change when selecting a heater switch option'''
-        print('Changing heater switch to: '
+        logger.info('Changing heater switch to: '
             + self.list_switch[self.var_switch.get()])
 
     
     def Set(self):
         '''Confirms written values and sends to iPS'''
-        print('Setting switch heater mode')
+        logger.info('Setting switch heater mode')
 
 
     def Update(self, mode):
         '''Updates values from IPS'''
-        print('Updating switch heater mode')
+        logger.info('Updating switch heater mode')
         if mode == 'ON': self.var_switch.set(0)
         elif mode == 'OFF': self.var_switch.set(1)
-        else: print('Unknown switch reply:',mode)
+        else: logger.warning('Unknown switch reply:',mode)
         # Study this guy....
 
 
@@ -295,18 +296,18 @@ class Ramp(tk.LabelFrame):
     
     def Ramp(self):
         '''Change when selecting a ramp mode option'''
-        print('Changing ramp mode to: '
+        logger.info('Changing ramp mode to: '
             + self.list_ramp[self.var_ramp.get()])
 
 
     def Set(self):
         '''Confirms written values and sends to iPS'''
-        print('Setting ramp mode')
+        logger.info('Setting ramp mode')
 
     
     def Update(self, mode):
         '''Updates values from iPS'''
-        print('Updating ramp mode:', mode)
+        logger.info('Updating ramp mode:', mode)
         self.var_ramp.set(self.list_ramp.index(mode))
 
 
@@ -364,7 +365,7 @@ class Sensors(tk.LabelFrame):
 
     def Update(self, fsensors):
         '''Updates values from iPS'''
-        print('Updating IPS sensor status')
+        logger.info('Updating IPS sensor status')
         self.var_helium.set(int(float(fsensors[0][:-1])))
         self.var_nitrogen.set(int(float(fsensors[1][:-1])))
         self.var_resistance.set(fsensors[2])

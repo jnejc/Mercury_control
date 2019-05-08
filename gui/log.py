@@ -15,7 +15,8 @@ import datetime # A format for dates and time
 import csv # For importing and exporting CSV files
 import os # For compiling directory paths
 
-
+import logging
+logger = logging.getLogger('log')     # Set the logger
 
 class Log_frame(tk.Frame):
     '''The plotting and logging frame'''
@@ -93,7 +94,7 @@ class Log_plot(tk.Frame):
         date_format = matplotlib.dates.DateFormatter('%H:%M:%S')
         self.axes.xaxis.set_major_formatter(date_format)
         for i,trace in enumerate(self.y):
-            print(self.x, trace)
+            logger.debug(self.x, trace)
             line, = self.axes.plot(self.x, trace, 'o-', label=self.y_list[i])
             self.lines.append(line)
         self.fig.autofmt_xdate(rotation=30)
@@ -143,7 +144,7 @@ class Log_plot(tk.Frame):
 
         def Change_time(event=None):
             '''Change of logging interval, as option is selected from box'''
-            print('Time changed to: '+self.var_time.get())
+            logger.info('Logging interval changed to: '+self.var_time.get())
             self.time = self.dict_times[self.var_time.get()]
             # Logs now and continues with new interval
             if self.button_log['text'] == 'Stop log':
@@ -227,7 +228,7 @@ class Field_plot(Log_plot):
         '''Requests data from ips and adds to plot'''
         sensor = self.parent.parent.ips_frame.frame_select.var_sens.get()
         flog = self.ports.Get_Flog(sensor)
-        print(flog)
+        logger.info(flog)
         return flog
 
 
@@ -255,5 +256,5 @@ class Temperature_plot(Log_plot):
         '''Requests data from itc and adds to plot'''
         sensor = self.parent.parent.itc_frame.var_sens.get()
         tlog = self.ports.Get_Tlog(sensor)
-        print(tlog)
+        logger.info(tlog)
         return tlog

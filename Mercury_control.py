@@ -2,10 +2,12 @@ import gui
 import com
 import tkinter as tk
 import log
+import logging
+logger = logging.getLogger('log')     # Set the logger
 
 if __name__ == "__main__":
     '''Executes when this is the main aplication'''
-    print('Starting main application Mercury_control')
+    logger.info('Starting main application Mercury_control')
 
     ## Initiate logging settings
     #logging.basicConfig(filename='log_files\\app.log', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.DEBUG)
