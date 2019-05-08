@@ -1,9 +1,10 @@
 
 print("Importing log package")
-import log.logger
+
+import log.loggers
 
 __all__ = [
-    'logger'
+    'loggers'
     ]
 
 #pep-8 79 char line limit :)

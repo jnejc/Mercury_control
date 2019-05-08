@@ -49,12 +49,30 @@ def Test_logger(logger):
 
 
 
+def Configure_informer(logger):
+    '''Sets up a logger for informative emails (end of measurement, etc)'''
+
+    program_email = 'nejc.jansa@ijs.si'
+    my_email = 'nejc.jansa@ijs.si'
+
+    m_handler = logging.handlers.SMTPHandler('mailbox.ijs.si', program_email, [my_email], 'NMR 16T - INFO')
+    m_handler.setLevel(logging.INFO) # Sends information on email
+    m_format = logging.Formatter('%(asctime)s - %(levelname)s:\n%(message)s')
+    m_handler.setFormatter(m_format)
+    logger.addHandler(m_handler)
+
+
+
 # Initiate the logger
-my_logger = logging.getLogger('log')
-Configure_logger(my_logger)
+logger = logging.getLogger('log')
+Configure_logger(logger)
+informer = logging.getLogger('info')
+Configure_informer(informer)
+
 
 
 if __name__ == "__main__":
     '''Executes when this is the main aplication'''
-    Test_logger(my_logger)
+    Test_logger(logger)
+    informer.info('Measurement complete')
 
