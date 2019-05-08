@@ -228,7 +228,7 @@ class Field_plot(Log_plot):
         '''Requests data from ips and adds to plot'''
         sensor = self.parent.parent.ips_frame.frame_select.var_sens.get()
         flog = self.ports.Get_Flog(sensor)
-        logger.info(flog)
+        logger.debug(flog)
         return flog
 
 
@@ -256,5 +256,5 @@ class Temperature_plot(Log_plot):
         '''Requests data from itc and adds to plot'''
         sensor = self.parent.parent.itc_frame.var_sens.get()
         tlog = self.ports.Get_Tlog(sensor)
-        logger.info(tlog)
+        logger.debug(tlog)
         return tlog

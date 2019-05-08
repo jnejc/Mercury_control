@@ -49,7 +49,7 @@ class Comport():
         self.ser.write('*IDN?\n'.encode('utf-8'))
         x = self.ser.read(READ_LEN).decode('utf-8')
         self.ser.close()
-        logger.info(self.name + ': ' + x)
+        logger.info(self.name + ': ' + x.rstrip())
         return x
 
 
@@ -160,19 +160,19 @@ class Ports():
             split = s.split(':')
             
             if len(split) < 3:
-                logger.info('Found port: '+port)
+                logger.info('Found port: '+ port)
             elif split[2] == 'MERCURY IPS':
                 self.ips = Mercury(port)
-                logger.info('Found IPS:', port)
+                logger.info('Found IPS:'+ port)
                 self.ips.Find_daughters()
                 self.ips.Build_daughters()
             elif split[2] == 'MERCURY ITC':
                 self.itc = Mercury(port)
                 self.itc.Find_daughters()
-                logger.info('Found ITC:', port)
+                logger.info('Found ITC:'+ port)
                 self.itc.Build_daughters()
             else:
-                logger.info('Found port: '+port)
+                logger.info('Found port: '+ port)
 
     
     # iTC reading

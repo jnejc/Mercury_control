@@ -15,7 +15,7 @@ def Configure_logger(logger):
 
     # Create different handlers for different ways of forwarding logs
     #s_handler = logging.StreamHandler()
-    f_handler = logging.FileHandler('log_files\\app.logg')
+    f_handler = logging.FileHandler('log_files\\app.log')
     m_handler = logging.handlers.SMTPHandler('mailbox.ijs.si', program_email, [my_email], 'NMR 16T - CRITICAL!')
 
     #s_handler.setLevel(logging.DEBUG) # Writes all in cmd

@@ -59,7 +59,7 @@ class IPS_frame(tk.Frame):
 
     def Load_parameters(self):
         '''Talks to IPS and refreshes all values in entry boxes'''
-        logger.info('Loading IPS parameters from:', self.frame_select.var_sens.get())
+        logger.info('Loading IPS parameters from:'+ self.frame_select.var_sens.get())
 
         flog = self.ports.Get_Fstatus(self.frame_select.var_sens.get())
         fset = self.ports.Get_Fset(self.frame_select.var_sens.get())
@@ -250,7 +250,7 @@ class Switch(tk.LabelFrame):
         logger.info('Updating switch heater mode')
         if mode == 'ON': self.var_switch.set(0)
         elif mode == 'OFF': self.var_switch.set(1)
-        else: logger.warning('Unknown switch reply:',mode)
+        else: logger.warning('Unknown switch reply:'+ mode)
         # Study this guy....
 
 
@@ -307,7 +307,7 @@ class Ramp(tk.LabelFrame):
     
     def Update(self, mode):
         '''Updates values from iPS'''
-        logger.info('Updating ramp mode:', mode)
+        logger.info('Updating ramp mode:'+ mode)
         self.var_ramp.set(self.list_ramp.index(mode))
 
 

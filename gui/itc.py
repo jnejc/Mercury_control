@@ -64,7 +64,7 @@ class ITC_frame(tk.Frame):
 
     def Load_parameters(self):
         '''Talks to ITC and refreshes all values in entry boxes'''
-        logger.info('Loading ITC parameters from', self.var_sens.get())
+        logger.info('Loading ITC parameters from'+ self.var_sens.get())
         tlog = self.ports.Get_Tstatus(self.var_sens.get())
         tset = self.ports.Get_Tset(self.var_sens.get())
         tloop = self.ports.Get_Tloop(self.var_sens.get())
@@ -125,7 +125,7 @@ class Status(tk.LabelFrame):
     
     def Update(self, tlog):
         '''Updates values from iTC'''
-        logger.info('Updating iTC status', tlog)
+        logger.info('Updating iTC status'+ tlog)
         self.var_temp.set(tlog[1])
         self.var_tset.set(tlog[2])
         self.var_heater.set(int(tlog[3]))
@@ -196,7 +196,7 @@ class SetT(tk.LabelFrame):
     
     def Update(self, tset):
         '''Updates previously set values from iTC'''
-        logger.info('Updating previous set temperature values', tset)
+        logger.info('Updating previous set temperature values'+ tset)
         self.var_set.set(Strip_T(tset[0]))
         self.var_rate.set(Strip_T(tset[1]))
         self.var_ramp.set(True if tset[2] == 'ON' else False)
@@ -274,7 +274,7 @@ class Loop(tk.LabelFrame):
 
     def Update(self, tloop):
         '''Updates values from iTC'''
-        logger.info('Updating loop control values', tloop)
+        logger.info('Updating loop control values'+ tloop)
         self.var_P.set(tloop[0])
         self.var_I.set(tloop[1])
         self.var_D.set(tloop[2])
@@ -339,7 +339,7 @@ class Limits(tk.LabelFrame):
 
     def Update(self, tlimits):
         '''Updates heating limits values from iTC'''
-        logger.info('Updating heating limits values', tlimits)
+        logger.info('Updating heating limits values'+ tlimits)
         self.var_heat.set(tlimits[0])
         self.var_tmax.set(Strip_T(tlimits[1]))
         self.var_tmin.set(Strip_T(tlimits[2]))

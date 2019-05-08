@@ -9,6 +9,8 @@ from gui.itc import ITC_frame
 from gui.ips import IPS_frame
 from gui.log import Log_frame
 
+import logging
+logger = logging.getLogger('log')     # Set the logger
 
 class Main_application(tk.Frame):
     '''Main frame holding the skeleton for all future frames'''
@@ -64,6 +66,7 @@ class Main_application(tk.Frame):
         msg = 'Are you sure you want to close the program?\n' \
               'Unsaved data will be lost!'
         if tk.messagebox.askokcancel('Quit', msg):
+            logger.info('Main application closed')
             self.parent.destroy() # Kills root
 
 
