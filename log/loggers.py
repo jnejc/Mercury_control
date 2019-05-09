@@ -11,12 +11,14 @@ def Configure_logger(logger):
     my_email = 'nejc.jansa@ijs.si'
 
     # Default stream handler
-    logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')
+    logging.basicConfig(level=logging.DEBUG,
+        format='%(levelname)s: %(message)s')
 
     # Create different handlers for different ways of forwarding logs
     #s_handler = logging.StreamHandler()
     f_handler = logging.FileHandler('log_files\\app.log')
-    m_handler = logging.handlers.SMTPHandler('mailbox.ijs.si', program_email, [my_email], 'NMR 16T - CRITICAL!')
+    m_handler = logging.handlers.SMTPHandler('mailbox.ijs.si', program_email,
+        [my_email], 'NMR 16T - CRITICAL!')
 
     #s_handler.setLevel(logging.DEBUG) # Writes all in cmd
     f_handler.setLevel(logging.INFO) # Logs informative and higher to file
@@ -55,7 +57,8 @@ def Configure_informer(logger):
     program_email = 'nejc.jansa@ijs.si'
     my_email = 'nejc.jansa@ijs.si'
 
-    m_handler = logging.handlers.SMTPHandler('mailbox.ijs.si', program_email, [my_email], 'NMR 16T - INFO')
+    m_handler = logging.handlers.SMTPHandler('mailbox.ijs.si', program_email,
+        [my_email], 'NMR 16T - INFO')
     m_handler.setLevel(logging.INFO) # Sends information on email
     m_format = logging.Formatter('%(asctime)s - %(levelname)s:\n%(message)s')
     m_handler.setFormatter(m_format)
