@@ -135,7 +135,7 @@ class Status(tk.LabelFrame):
     
     def Update(self, flog):
         '''Updates values in entries from iPS'''
-        logger.info('Updating IPS status')
+        logger.info('Updating IPS status: '+ str(flog))
         self.var_field.set(flog[1])
         self.var_fset.set(flog[2])
         self.var_voltage.set(flog[3])
@@ -194,7 +194,7 @@ class SetF(tk.LabelFrame):
 
     def Update(self, fset):
         '''Updates previously set values from iPS'''
-        logger.info('Updating previously set field values from IPS')
+        logger.info('Updating previously set field values from IPS: '+str(fset))
         self.var_set.set(Strip_T(fset[0]))
         self.var_rate.set(Strip_T(fset[1]))
 
@@ -247,10 +247,10 @@ class Switch(tk.LabelFrame):
 
     def Update(self, mode):
         '''Updates values from IPS'''
-        logger.info('Updating switch heater mode')
+        logger.info('Updating switch heater mode: '+ str(mode))
         if mode == 'ON': self.var_switch.set(0)
         elif mode == 'OFF': self.var_switch.set(1)
-        else: logger.warning('Unknown switch reply:'+ mode)
+        else: logger.warning('Unknown switch reply: '+ mode)
         # Study this guy....
 
 
@@ -307,7 +307,7 @@ class Ramp(tk.LabelFrame):
     
     def Update(self, mode):
         '''Updates values from iPS'''
-        logger.info('Updating ramp mode:'+ mode)
+        logger.info('Updating ramp mode: '+ str(mode))
         self.var_ramp.set(self.list_ramp.index(mode))
 
 
@@ -365,7 +365,7 @@ class Sensors(tk.LabelFrame):
 
     def Update(self, fsensors):
         '''Updates values from iPS'''
-        logger.info('Updating IPS sensor status')
+        logger.info('Updating IPS sensor status: '+str(fsensors))
         self.var_helium.set(int(float(fsensors[0][:-1])))
         self.var_nitrogen.set(int(float(fsensors[1][:-1])))
         self.var_resistance.set(fsensors[2])
