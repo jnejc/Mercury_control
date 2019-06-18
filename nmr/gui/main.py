@@ -7,7 +7,7 @@ import tkinter as tk    # Gui package
 #import logging
 #logger = logging.getLogger('log')    # Set the logger
 
-
+from gui.experiment import Experiment_frame
 
 class TNMR_application(tk.Frame):
     '''Toplevel window holding the skeleton for NMR operations'''
@@ -23,7 +23,10 @@ class TNMR_application(tk.Frame):
         tk.Frame.__init__(self, parent, height=900, width=1600)
         self.pack(fill='both', expand=True)
 
+        self.Add_frames()
+
 
     def Add_frames(self):
         '''Packs the frames and positions them'''
-        
+        self.experiment_frame=Experiment_frame(self)
+        self.experiment_frame.pack(side='left', fill='y')
