@@ -26,48 +26,19 @@ class Experiment_frame(tk.Frame):
         #self.label_title.config(font=('Courier', 16))
         self.label_title.pack(side='top', fill='x', padx=10)
 
-        # Status frame
-        self.frame_status = Status(self, self.ports)
-        self.frame_status.pack(side='top', fill='x', padx=5, pady=5)
+        # Entry new experiment
+        self.var_new = tk.StringVar(self)
+        self.entry_new = ttk.Entry(self, textvariable=self.var_new)
+        self.entry_new.pack(side='top', fill=x)
 
-        # Set frame
-        self.frame_set = SetF(self, self.ports)
-        self.frame_set.pack(side='top', fill='x', padx=5, pady=5)
-
-        # Switch frame
-        self.frame_switch = Switch(self, self.ports)
-        self.frame_switch.pack(side='top', fill='x', padx=5, pady=5)
-
-        # Ramp frame
-        self.frame_ramp = Ramp(self, self.ports)
-        self.frame_ramp.pack(side='top', fill='x', padx=5, pady=5)
-
-        # Sensor frame
-        self.frame_sensors = Sensors(self, self.ports)
-        self.frame_sensors.pack(side='top', fill='x', padx=5, pady=5)
-
-        # Select frame
-        self.frame_select = Select(self, self.ports)
-        self.frame_select.pack(side='top', fill='x', padx=5 , pady=5)
-
-        # Load parameters
-        self.button_load = ttk.Button(self, text='Load from iPS',
-            command=self.Load_parameters, width=20)
-        self.button_load.pack(side='top',pady=10)
+        # Button new experiment
+        self.button_new = ttk.Button(self, text='Create New',
+            command=self.New_experiment)
+        self.button_new.pack(side='top', fill=x)
 
 
-    def Load_parameters(self):
-        '''Talks to IPS and refreshes all values in entry boxes'''
-        logger.info('Loading IPS parameters from:'+ self.frame_select.var_sens.get())
+    def New_experiment(self):
+        '''Creates new experiment entry and the directories'''
+        pass
 
-        flog = self.ports.Get_Fstatus(self.frame_select.var_sens.get())
-        fset = self.ports.Get_Fset(self.frame_select.var_sens.get())
-        fmode = self.ports.Get_Fmode(self.frame_select.var_sens.get())
-        fsensors = self.ports.Get_Fsensors(self.frame_select.var_sens.get(),
-            self.frame_select.var_lvl.get(),self.frame_select.var_temp.get())
 
-        self.frame_status.Update(flog)
-        self.frame_set.Update(fset)
-        self.frame_switch.Update(fmode[0])
-        self.frame_ramp.Update(fmode[1])
-        self.frame_sensors.Update(fsensors)
