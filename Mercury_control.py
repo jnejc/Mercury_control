@@ -9,10 +9,6 @@ if __name__ == "__main__":
     '''Executes when this is the main aplication'''
     logger.info('Starting main application Mercury_control')
 
-    ## Initiate logging settings
-    #logging.basicConfig(filename='log_files\\app.log', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.DEBUG)
-    #logging.info('Starting log file')
-
     # Initiate the comport communication
     comports = com.ports.Ports()
 

@@ -2,7 +2,7 @@
 
 # Imports
 import tkinter as tk    # Gui package
-from tkinter import ttk # Fancier widgets
+#from tkinter import ttk # Fancier widgets
 from tkinter import messagebox
 
 from gui.itc import ITC_frame
@@ -11,6 +11,11 @@ from gui.log import Log_frame
 
 import logging
 logger = logging.getLogger('log')     # Set the logger
+
+from nmr.gui import main
+
+
+
 
 class Main_application(tk.Frame):
     '''Main frame holding the skeleton for all future frames'''
@@ -76,17 +81,27 @@ class Menu(tk.Menu):
     def __init__(self, root):
         '''Initializes as menu class'''
         tk.Menu.__init__(self, root)
+        self.root = root
 
         # File cascade
         self.file = tk.Menu(self, tearoff=0)
         self.file.add_command(label='Exit without saving',
             command=root.destroy)
+        self.file.add_command(label='Open TNMR application',
+            command=self.Run_TNMR)
         self.add_cascade(label='File', menu=self.file)
 
         # Edit cascade
         self.edit = tk.Menu(self, tearoff=0)
         self.edit.add_command(label='Delete menu', command=self.destroy)
         self.add_cascade(label='Edit', menu=self.edit)
+
+
+    def Run_TNMR(self):
+        '''Opens the TNMR application in separate window'''
+        TNMR_window = tk.Toplevel(self.root, height=900, width=1600)
+        main.TNMR_application(TNMR_window)
+
 
 
 
