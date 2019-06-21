@@ -49,13 +49,13 @@ class Experiment_frame(tk.Frame):
         self.button_open.pack(side='top', fill='x', padx=5)
         
 
-    def New_experiment(self):
+    def New_experiment(self, event=None):
         '''Creates new experiment entry and the directories'''
-        pass
+        print(event)
 
 
-    def Open_experiment(self):
+    def Open_experiment(self, event=None):
         '''Opens the selected experiment'''
-        pass
+        print(event)
 
 
