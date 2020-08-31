@@ -112,12 +112,12 @@ class Status(tk.LabelFrame):
         self.entry_tset.grid(row=1, column=2)
 
         # Status bars
-        self.var_heater = tk.IntVar(self)
+        self.var_heater = tk.DoubleVar(self)
         self.bar_heater = ttk.Progressbar(self, variable=self.var_heater,
             length=68)
         self.bar_heater.grid(row=3, column=0)
 
-        self.var_flow = tk.IntVar(self)
+        self.var_flow = tk.DoubleVar(self)
         self.bar_flow = ttk.Progressbar(self, variable=self.var_flow,
             length=68)
         self.bar_flow.grid(row=3, column=2)
@@ -128,10 +128,10 @@ class Status(tk.LabelFrame):
         logger.info('Updating iTC status: '+ str(tlog))
         self.var_temp.set(tlog[1])
         self.var_tset.set(tlog[2])
-        self.var_heater.set(int(tlog[3]))
+        self.var_heater.set(tlog[3])
         try:
-            self.var_flow.set(int(tlog[4]))
-        except:
+            self.var_flow.set(tlog[4])
+        except: #If flow is not set?
             self.var_flow.set(0)
 
 

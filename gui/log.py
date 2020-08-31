@@ -154,9 +154,9 @@ class Log_plot(tk.Frame):
 
         def Clear_plot(event=None):
             '''Clears all but the last point in the plot and replots'''
-            self.x = list(self.x[-1])
+            self.x = [self.x[-1]]
             for i in range(self.y_len):
-                self.y[i] = list(self.y[i][-1])
+                self.y[i] = [self.y[i][-1]]
                 self.lines[i].set_ydata(self.y[i])
                 self.lines[i].set_xdata(self.x)
             self.axes.relim()
@@ -211,7 +211,7 @@ class Field_plot(Log_plot):
         self.device = 'ips'
         self.title = 'Field log'
         self.y_axis = 'Field (T)'
-        self.y_list = ['Current F', 'Set F', 'Peristent F']
+        self.y_list = ['Set F', 'Current F', 'Peristent F']
         self.file_end = '_Field.log'
 
         # Create log directory
@@ -240,7 +240,7 @@ class Temperature_plot(Log_plot):
         self.device = 'itc'
         self.title = 'Temperature log'
         self.y_axis = 'Temperature (K)'
-        self.y_list = ['Current T', 'Set T']
+        self.y_list = ['Set T', 'Current T']
         self.file_end = '_Temp.log'
 
         # Create log directory

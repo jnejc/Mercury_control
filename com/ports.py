@@ -15,6 +15,7 @@ logger = logging.getLogger('log')     # Set the logger
 READ_LEN = 200
 ENC = 'utf-8'
 APP_NAME = 'Mercury'
+PORT_TIMEOUT = 0.2
 
 
 
@@ -23,7 +24,7 @@ class Comport():
     def __init__(self, port):
         '''Initializes comport'''
         self.name = port
-        self.ser = serial.Serial(port, timeout=0.1) # Fails if too short
+        self.ser = serial.Serial(port, timeout=PORT_TIMEOUT) # Fails if too short
         self.ser.close()
 
 
@@ -181,9 +182,9 @@ class Ports():
         time = datetime.now()
         temperature = self.itc.__dict__[sens].Read_option('TEMP', warn=False)
         setpoint = self.itc.__dict__[sens].Read_option('TSET', warn=False)
-        heater = self.itc.__dict__[sens].Read_option('HSET')
+        heater = self.itc.__dict__[sens].Read_option('HSET', warn=False)
 
-        return(time, temperature, setpoint, heater)
+        return(time, setpoint, temperature, heater)
 
 
     def Get_Tstatus(self, sens):
@@ -235,7 +236,7 @@ class Ports():
         field_set = self.ips.__dict__[sens].Read_option('FSET', warn=False)
         persistent_field = self.ips.__dict__[sens].Read_option('PFLD', warn=False)
 
-        return(time, field, field_set, persistent_field)
+        return(time, field_set, field, persistent_field)
 
 
     def Get_Fstatus(self, sens):

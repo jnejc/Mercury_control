@@ -352,12 +352,12 @@ class Sensors(tk.LabelFrame):
         self.entry_temp.grid(row=4, column=0, columnspan=3)
 
         # Status bars
-        self.var_helium = tk.IntVar(self)
+        self.var_helium = tk.DoubleVar(self)
         self.bar_helium = ttk.Progressbar(self, variable=self.var_helium,
             length=68)
         self.bar_helium.grid(row=2, column=0)
 
-        self.var_nitrogen = tk.IntVar(self)
+        self.var_nitrogen = tk.DoubleVar(self)
         self.bar_nitrogen = ttk.Progressbar(self, variable=self.var_nitrogen,
             length=68)
         self.bar_nitrogen.grid(row=2, column=2)
@@ -366,8 +366,8 @@ class Sensors(tk.LabelFrame):
     def Update(self, fsensors):
         '''Updates values from iPS'''
         logger.info('Updating IPS sensor status: '+str(fsensors))
-        self.var_helium.set(int(float(fsensors[0][:-1])))
-        self.var_nitrogen.set(int(float(fsensors[1][:-1])))
+        self.var_helium.set(float(fsensors[0][:-1]))
+        self.var_nitrogen.set(float(fsensors[1][:-1]))
         self.var_resistance.set(fsensors[2])
         self.var_freq.set(fsensors[3])
         self.var_temp.set(fsensors[4])
