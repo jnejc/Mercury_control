@@ -368,10 +368,12 @@ class Sensors(tk.LabelFrame):
         logger.info('Updating IPS sensor status: '+str(fsensors))
         self.var_helium.set(float(fsensors[0][:-1]))
         self.var_nitrogen.set(float(fsensors[1][:-1]))
-        self.var_resistance.set(fsensors[2])
-        self.var_freq.set(fsensors[3])
+        # Use percentage values insetad
+        self.var_resistance.set(fsensors[0])
+        self.var_freq.set(fsensors[1])
+        #self.var_resistance.set(fsensors[2])
+        #self.var_freq.set(fsensors[3])
         self.var_temp.set(fsensors[4])
-
 
 
 class Select(tk.Frame):

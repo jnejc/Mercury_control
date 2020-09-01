@@ -116,7 +116,7 @@ class Device():
                 'I' : 'LOOP:I',         # Integral gain
                 'D' : 'LOOP:D',         # Differential gain
                 'HSET' : 'LOOP:HSET',   # Heater percentage
-                'FSET' : 'LOOP:FSET',   # Flow percentage
+                'FLSET' : 'LOOP:FSET',   # Flow percentage
                 'RSET' : 'LOOP:RSET',   # Ramp rate
                 'HTR' : 'LOOP:HTR',     # Asign heater to temperature loop
                 'AUX' : 'LOOP:AUX',     # Asign aux device to temperature loop

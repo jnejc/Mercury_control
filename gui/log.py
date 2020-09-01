@@ -190,7 +190,7 @@ class Log_plot(tk.Frame):
 
     def Write_log(self, log):
         '''Writes the log data into a log file'''
-        file_name = log[0].strftime('%Y%m%d')+ self.file_end
+        file_name = log[0].strftime('%Y%m%d') + self.file_end
         file_path = os.path.join(self.file_directory, file_name)
 
         with open(file_path, 'a', newline='') as f:

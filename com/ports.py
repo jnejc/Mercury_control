@@ -61,6 +61,7 @@ class Comport():
         self.ser.write((string + '\n').encode(ENC))
         x = self.ser.read(str_len)
         self.ser.close()
+        #logger.debug(x)
         x = x.decode(ENC).rstrip()
         print('<<<' + x)
 
@@ -183,19 +184,21 @@ class Ports():
         temperature = self.itc.__dict__[sens].Read_option('TEMP', warn=False)
         setpoint = self.itc.__dict__[sens].Read_option('TSET', warn=False)
         heater = self.itc.__dict__[sens].Read_option('HSET', warn=False)
+        flow = self.itc.__dict__[sens].Read_option('FLSET', warn=False)
 
-        return(time, setpoint, temperature, heater)
+        return(time, setpoint, temperature, heater, flow)
 
 
-    def Get_Tstatus(self, sens):
+    def Get_Tstatus(self, sens, htr):
         '''Gets the parameters required to update the status bar'''
         time = datetime.now()
         temperature = self.itc.__dict__[sens].Read_option('TEMP')
         setpoint = self.itc.__dict__[sens].Read_option('TSET')
         heater = self.itc.__dict__[sens].Read_option('HSET')
-        flow = self.itc.__dict__[sens].Read_option('FSET')
+        flow = self.itc.__dict__[sens].Read_option('FLSET')
+        power = self.itc.__dict__[htr].Read_option('POWR')
 
-        return(time, temperature, setpoint, heater, flow)
+        return(time, temperature, setpoint, heater, flow, power)
 
     
     def Get_Tset(self, sens):

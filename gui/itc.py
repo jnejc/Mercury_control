@@ -65,9 +65,9 @@ class ITC_frame(tk.Frame):
     def Load_parameters(self):
         '''Talks to ITC and refreshes all values in entry boxes'''
         logger.info('Loading ITC parameters from'+ self.var_sens.get())
-        tlog = self.ports.Get_Tstatus(self.var_sens.get())
         tset = self.ports.Get_Tset(self.var_sens.get())
         tloop = self.ports.Get_Tloop(self.var_sens.get())
+        tlog = self.ports.Get_Tstatus(self.var_sens.get(), tloop[3])
         tlimits = self.ports.Get_Tlimits(self.var_sens.get(), tloop[3])
 
         self.frame_status.Update(tlog)
@@ -96,6 +96,9 @@ class Status(tk.LabelFrame):
         ttk.Label(self, text='Heater %').grid(row=2, column=0)
         ttk.Label(self, text='Flow %').grid(row=2, column=2)
 
+        ttk.Label(self, text='Heater Power').grid(row=4, column=0)
+        ttk.Label(self, text='Needle position').grid(row=4, column=2)
+
         # Spacer
         ttk.Label(self, text='  ').grid(row=0,column=1)
         self.grid_columnconfigure(1, weight=1) # Alows stretch and centering
@@ -111,6 +114,16 @@ class Status(tk.LabelFrame):
             justify='center', width=12, state='readonly')
         self.entry_tset.grid(row=1, column=2)
 
+        self.var_power = tk.StringVar(self)
+        self.entry_power = ttk.Entry(self, textvariable=self.var_power,
+            justify='center', width=12, state='readonly')
+        self.entry_power.grid(row=5, column=0)
+
+        self.var_needle = tk.StringVar(self)
+        self.entry_needle = ttk.Entry(self, textvariable=self.var_needle,
+            justify='center', width=12, state='readonly')
+        self.entry_needle.grid(row=5, column=2)
+
         # Status bars
         self.var_heater = tk.DoubleVar(self)
         self.bar_heater = ttk.Progressbar(self, variable=self.var_heater,
@@ -124,15 +137,15 @@ class Status(tk.LabelFrame):
 
     
     def Update(self, tlog):
-        '''Updates values from iTC'''
+        '''Updates values from iTC
+            (time, temperature, setpoint, heater, flow, power)'''
         logger.info('Updating iTC status: '+ str(tlog))
         self.var_temp.set(tlog[1])
         self.var_tset.set(tlog[2])
         self.var_heater.set(tlog[3])
-        try:
-            self.var_flow.set(tlog[4])
-        except: #If flow is not set?
-            self.var_flow.set(0)
+        self.var_flow.set(tlog[4])
+        self.var_power.set(tlog[5])
+        self.var_needle.set(tlog[4])
 
 
 
