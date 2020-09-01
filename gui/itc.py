@@ -213,7 +213,7 @@ class SetT(tk.LabelFrame):
         self.var_set.set(Strip_T(tset[0]))
         self.var_rate.set(Strip_T(tset[1]))
         self.var_ramp.set(True if tset[2] == 'ON' else False)
-        self.var_ramp.set(True if tset[3] == 'ON' else False)
+        self.var_flow.set(True if tset[3] == 'ON' else False)
 
 
 

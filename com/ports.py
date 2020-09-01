@@ -80,6 +80,7 @@ class Comport():
             msg = 'No permission to change the adressed parameter: '+string
 
         if msg:
+            logger.info(msg)
             if warn:
                 messagebox.showerror('COMport error', msg)
             return None
@@ -175,6 +176,17 @@ class Ports():
                 self.itc.Build_daughters()
             else:
                 logger.info('Found port: '+ port)
+
+        # Warn if devices were not found
+        if self.ips == None:
+            logger.info('IPS not found!')
+            msg = 'IPS not found, enable remote control and restart program'
+            messagebox.showerror('Missing IPS', msg)
+
+        if self.itc == None:
+            logger.info('ITC not found!')
+            msg = 'ITC not found, enable remote control and restart program'
+            messagebox.showerror('Missing ITC', msg)
 
     
     # iTC reading

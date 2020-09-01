@@ -41,13 +41,16 @@ class Main_application(tk.Frame):
     def Add_frames(self):
         '''Packs the inside frames'''
         # Use pack for expandable slots, grid for fixed sizes
-        self.itc_frame=ITC_frame(self, self.ports)
-        self.itc_frame.pack(side='left', fill='y')
-        #self.itc_frame.grid(column=0, row=0)
+        # Check if devices exist!
+        if self.ports.itc != None:
+            self.itc_frame=ITC_frame(self, self.ports)
+            self.itc_frame.pack(side='left', fill='y')
+            #self.itc_frame.grid(column=0, row=0)
 
-        self.ips_frame=IPS_frame(self, self.ports)
-        self.ips_frame.pack(side='right', fill='y')
-        #self.ips_frame.grid(column=2, row=0)
+        if self.ports.ips != None:
+            self.ips_frame=IPS_frame(self, self.ports)
+            self.ips_frame.pack(side='right', fill='y')
+            #self.ips_frame.grid(column=2, row=0)
 
         self.log_frame=Log_frame(self, self.ports)
         self.log_frame.pack(side='left', expand=True, fill='both')

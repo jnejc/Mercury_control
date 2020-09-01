@@ -29,11 +29,14 @@ class Log_frame(tk.Frame):
 
     def Widgets(self):
         '''Shapes the frame's widgets'''
-        self.plot1 = Temperature_plot(self, self.ports)
-        self.plot1.pack(side='top', fill='both', expand=True)
+        # Check if device exists
+        if self.ports.itc != None:
+            self.plot1 = Temperature_plot(self, self.ports)
+            self.plot1.pack(side='top', fill='both', expand=True)
 
-        self.plot2 = Field_plot(self, self.ports)
-        self.plot2.pack(side='top', fill='both', expand=True)
+        if self.ports.ips != None:
+            self.plot2 = Field_plot(self, self.ports)
+            self.plot2.pack(side='top', fill='both', expand=True)
 
 
 
@@ -86,15 +89,15 @@ class Log_plot(tk.Frame):
         self.axes.set_ylabel(self.y_axis)
 
         # Prepare data lists
+        log = self.Update()
         self.x = [datetime.datetime.now()]
-        self.y = [[0] for i in self.y_list]
+        self.y = [[float(y[:-1])] for y in log[1:1+self.y_len]]
 
         self.lines = list()
 
         date_format = matplotlib.dates.DateFormatter('%H:%M:%S')
         self.axes.xaxis.set_major_formatter(date_format)
         for i,trace in enumerate(self.y):
-            logger.debug(self.x, trace)
             line, = self.axes.plot(self.x, trace, 'o-', label=self.y_list[i])
             self.lines.append(line)
         self.fig.autofmt_xdate(rotation=30)
@@ -129,14 +132,15 @@ class Log_plot(tk.Frame):
             self.Write_log(log)
 
             # Add to plot lists
-            self.x.append(log[0])
-            for i in range(self.y_len):
-                self.y[i].append(float(log[i+1][:-1]))
-                self.lines[i].set_ydata(self.y[i])
-                self.lines[i].set_xdata(self.x)
-            self.axes.relim()
-            self.axes.autoscale_view() 
-            self.canvas.draw() # Redraw canvas
+            if not None in log: # Check if all values were read
+                self.x.append(log[0])
+                for i in range(self.y_len):
+                    self.y[i].append(float(log[i+1][:-1]))
+                    self.lines[i].set_ydata(self.y[i])
+                    self.lines[i].set_xdata(self.x)
+                self.axes.relim()
+                self.axes.autoscale_view() 
+                self.canvas.draw() # Redraw canvas
 
             # Continue logging
             self.logging = self.button_log.after(self.time, Log)
