@@ -7,8 +7,16 @@ from tkinter import messagebox
 
 from gui.funct import Strip_T, List_sensors
 
+# Logging
+import datetime # A format for dates and time
+import csv # For importing and exporting CSV files
+import os # For compiling directory paths
+
 import logging
 logger = logging.getLogger('log')     # Set the logger
+
+# Global variables
+LOG_TIME = 20*60*1000 # 20 min
 
 class IPS_frame(tk.Frame):
     '''The controll frame for IPS'''
@@ -200,7 +208,6 @@ class SetF(tk.LabelFrame):
 
 
 
-
 class Switch(tk.LabelFrame):
     '''Switch heater frame and inner objects'''
     def __init__(self, parent, ports):
@@ -312,7 +319,6 @@ class Ramp(tk.LabelFrame):
 
 
 
-
 class Sensors(tk.LabelFrame):
     '''Sensor frame and inner objects'''
     def __init__(self, parent, ports):
@@ -321,6 +327,11 @@ class Sensors(tk.LabelFrame):
         self.parent = parent
         self.ports = ports
         self.Widgets()
+
+        # Start logging on self
+        self.file_end = '_Sensor.log'
+        self.file_directory = os.path.join('log_files','sensors')
+        self.logging = self.after(10, self.Log)
 
 
     def Widgets(self):
@@ -363,6 +374,28 @@ class Sensors(tk.LabelFrame):
         self.bar_nitrogen.grid(row=2, column=2)
 
 
+    def Log(self):
+        '''Function for continous logging of sensor data into file'''
+        # Fetch fresh values
+        log = self.ports.Get_Fsens(self.parent.frame_select.var_lvl.get())
+
+        # Define file parameters
+        file_name = log[0].strftime('%Y%m%d') + self.file_end
+        file_path = os.path.join(self.file_directory, file_name)
+
+        with open(file_path, 'a', newline='') as f:
+            writer = csv.writer(f, delimiter=';')
+            # Add line
+            line = []
+            line.append(log[0].strftime('%H:%M:%S'))
+            for i in log[1:]:
+                line.append(i)
+            writer.writerow(line)
+
+        # Continue logging
+        self.logging = self.after(LOG_TIME, self.Log)
+
+
     def Update(self, fsensors):
         '''Updates values from iPS'''
         logger.info('Updating IPS sensor status: '+str(fsensors))
@@ -374,6 +407,7 @@ class Sensors(tk.LabelFrame):
         #self.var_resistance.set(fsensors[2])
         #self.var_freq.set(fsensors[3])
         self.var_temp.set(fsensors[4])
+
 
 
 class Select(tk.Frame):

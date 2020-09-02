@@ -218,9 +218,18 @@ class Ports():
         setpoint = self.itc.__dict__[sens].Read_option('TSET')
         ramp = self.itc.__dict__[sens].Read_option('RSET')
         ramp_enable = self.itc.__dict__[sens].Read_option('RENA')
+
+        return(setpoint, ramp, ramp_enable)
+
+    
+    def Get_Tmanual(self, sens):
+        '''Gets the parameters reqired to update the manual bar'''
+        heater = self.itc.__dict__[sens].Read_option('HSET')
+        flow = self.itc.__dict__[sens].Read_option('FLSET')
+        heater_enable = self.itc.__dict__[sens].Read_option('ENAB')
         flow_enable = self.itc.__dict__[sens].Read_option('FAUT')
 
-        return(setpoint, ramp, ramp_enable, flow_enable)
+        return(heater, flow, heater_enable, flow_enable)
 
 
     def Get_Tloop(self, sens):
@@ -294,6 +303,14 @@ class Ports():
 
         return(helium_bar, nitrogen_bar, helium_res, nitrogen_fr, temperature)
 
+
+    def Get_Fsens(self, lvl):
+        '''Gets parameters to update sensor status'''
+        time = datetime.now()
+        helium_bar = self.ips.__dict__[lvl].Read_option('HLEV')
+        nitrogen_bar = self.ips.__dict__[lvl].Read_option('NLEV')
+
+        return(time, helium_bar, nitrogen_bar)
 
 
 

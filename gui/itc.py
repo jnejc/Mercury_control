@@ -70,13 +70,14 @@ class ITC_frame(tk.Frame):
         '''Talks to ITC and refreshes all values in entry boxes'''
         logger.info('Loading ITC parameters from'+ self.var_sens.get())
         tset = self.ports.Get_Tset(self.var_sens.get())
+        tmanual = self.ports.Get_Tmanual(self.var_sens.get())
         tloop = self.ports.Get_Tloop(self.var_sens.get())
-        tlog = self.ports.Get_Tstatus(self.var_sens.get(), tloop[3])
+        tstatus = self.ports.Get_Tstatus(self.var_sens.get(), tloop[3])
         tlimits = self.ports.Get_Tlimits(self.var_sens.get(), tloop[3])
 
-        self.frame_status.Update(tlog)
+        self.frame_status.Update(tstatus)
         self.frame_set.Update(tset)
-        self.frame_manual.Update(tlog)
+        self.frame_manual.Update(tmanual)
         self.frame_loop.Update(tloop)
         self.frame_limits.Update(tlimits)
 
@@ -141,16 +142,16 @@ class Status(tk.LabelFrame):
         self.bar_flow.grid(row=3, column=2)
 
     
-    def Update(self, tlog):
+    def Update(self, tstatus):
         '''Updates values from iTC
             (time, temperature, setpoint, heater, flow, power)'''
-        logger.info('Updating iTC status: '+ str(tlog))
-        self.var_temp.set(tlog[1])
-        self.var_tset.set(tlog[2])
-        self.var_heater.set(tlog[3])
-        self.var_flow.set(tlog[4])
-        self.var_power.set(tlog[5])
-        self.var_needle.set(tlog[4])
+        logger.info('Updating iTC status: '+ str(tstatus))
+        self.var_temp.set(tstatus[1])
+        self.var_tset.set(tstatus[2])
+        self.var_heater.set(tstatus[3])
+        self.var_flow.set(tstatus[4])
+        self.var_power.set(tstatus[5])
+        self.var_needle.set(tstatus[4])
 
 
 
@@ -343,33 +344,49 @@ class Manual(tk.LabelFrame):
             command=self.Auto_flow, width=12)
         self.button_flow_auto.grid(row=3, column=2)
 
+        # Check buttons
+        self.var_heater_check = tk.BooleanVar(self)
+        self.check_heater = ttk.Checkbutton(self, state='disabled',
+            variable=self.var_heater_check)
+        self.check_heater.grid(row=4, column=0)
+
+        self.var_flow_check = tk.BooleanVar(self)
+        self.check_flow = ttk.Checkbutton(self, state='disabled',
+            variable=self.var_flow_check)
+        self.check_flow.grid(row=4, column=2)
+
 
     def Set_heater(self):
         '''Confirms written values and sends to iTC'''
-        logger.info('Setting manual heater to '+self.var_heater)
+        logger.info('Setting manual heater to '+self.var_heater.get())
+        self.var_heater_check.set(False)
 
 
     def Set_flow(self):
         '''Confirms written values and sends to iTC'''
-        logger.info('Setting manual flow to: '+self.var_flow)
-
+        logger.info('Setting manual flow to: '+self.var_flow.get())
+        self.var_flow_check.set(False)
 
     def Auto_heater(self):
         '''Enables automatic heater control'''
         logger.info('Setting heater control to automatic')
+        self.var_heater_check.set(True)
 
 
     def Auto_flow(self):
         '''Enables automatic flow control'''
         logger.info('Setting flow control to automatic')
+        self.var_flow_check.set(True)
 
 
-    def Update(self, tlog):
+    def Update(self, tmanual):
         '''Updates values from iTC
-            (time, temperature, setpoint, heater, flow, power)'''
-        logger.info('Updating control values'+ str(tlog[3:4]))
-        self.var_heater.set(tlog[3])
-        self.var_flow.set(tlog[4])
+            (heater, flow, heater_enable, flow_enable)'''
+        logger.info('Updating manual control values'+ str(tmanual))
+        self.var_heater.set(tmanual[0])
+        self.var_flow.set(tmanual[1])
+        self.var_heater_check.set(True if tmanual[2] == 'ON' else False)
+        self.var_flow_check.set(True if tmanual[3] == 'ON' else False)
 
 
 
