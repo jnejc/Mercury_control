@@ -33,6 +33,10 @@ class ITC_frame(tk.Frame):
         # Set frame
         self.frame_set = SetT(self, self.ports)
         self.frame_set.pack(side='top', fill='x', padx=5, pady=5)
+    
+        # Manual frame
+        self.frame_manual = Manual(self, self.ports)
+        self.frame_manual.pack(side='top', fill='x', padx=5, pady=5)
 
         # Loop frame
         self.frame_loop = Loop(self, self.ports)
@@ -72,6 +76,7 @@ class ITC_frame(tk.Frame):
 
         self.frame_status.Update(tlog)
         self.frame_set.Update(tset)
+        self.frame_manual.Update(tlog)
         self.frame_loop.Update(tloop)
         self.frame_limits.Update(tlimits)
 
@@ -166,8 +171,7 @@ class SetT(tk.LabelFrame):
         ttk.Label(self, text='Set T:').grid(row=0, column=0, sticky='E')
         ttk.Label(self, text='Ramp rate:').grid(row=1, column=0, sticky='E')
         ttk.Label(self, text='Enable ramp').grid(row=2, column=0, sticky='E')
-        ttk.Label(self, text='Flow control').grid(row=3, column=0, sticky='E')
-        ttk.Label(self, text='Confirm').grid(row=4, column=0, sticky='E')
+        ttk.Label(self, text='Confirm').grid(row=3, column=0, sticky='E')
 
         ttk.Label(self, text='K').grid(row=0, column=3, sticky='W')
         ttk.Label(self, text='K/min').grid(row=1, column=3, sticky='W')
@@ -180,10 +184,6 @@ class SetT(tk.LabelFrame):
         self.var_ramp = tk.BooleanVar(self)
         self.check_ramp = ttk.Checkbutton(self, variable=self.var_ramp)
         self.check_ramp.grid(row=2, column=2, columnspan=2)
-
-        self.var_flow = tk.BooleanVar(self)
-        self.check_flow = ttk.Checkbutton(self, variable=self.var_flow)
-        self.check_flow.grid(row=3, column=2, columnspan=2)
 
         # Entries
         self.var_set = tk.StringVar(self)
@@ -199,7 +199,7 @@ class SetT(tk.LabelFrame):
         # Button
         self.button_set = ttk.Button(self, text='Set T',
             command=self.Set, width=10)
-        self.button_set.grid(row=4, column=2, columnspan=2)
+        self.button_set.grid(row=3, column=2, columnspan=2)
 
 
     def Set(self):
@@ -213,7 +213,6 @@ class SetT(tk.LabelFrame):
         self.var_set.set(Strip_T(tset[0]))
         self.var_rate.set(Strip_T(tset[1]))
         self.var_ramp.set(True if tset[2] == 'ON' else False)
-        self.var_flow.set(True if tset[3] == 'ON' else False)
 
 
 
@@ -293,6 +292,84 @@ class Loop(tk.LabelFrame):
         self.var_D.set(tloop[2])
         self.var_heat.set(tloop[3])
         self.var_aux.set(tloop[4])
+
+
+
+class Manual(tk.LabelFrame):
+    '''Manual heater and flow control commands'''
+    def __init__(self, parent, ports):
+        '''Calls init method of LabelFrame and fills up frame'''
+        tk.LabelFrame.__init__(self, parent, text='Manual control', padx=10, pady=5)
+        self.parent = parent
+        self.ports = ports
+        self.Widgets()
+
+
+    def Widgets(self):
+        '''Shapes the frame's widgets'''
+        # Labels
+        ttk.Label(self, text='Flow %').grid(row=0, column=0)
+        ttk.Label(self, text='Heater %').grid(row=0, column=2)
+
+        # Spacer
+        ttk.Label(self, text='  ').grid(row=0,column=1)
+        self.grid_columnconfigure(1, weight=1) # Alows stretch and centering
+
+        # Entries
+        self.var_flow = tk.StringVar(self)
+        self.entry_flow = ttk.Entry(self, textvariable=self.var_flow,
+            justify='center', width=12)
+        self.entry_flow.grid(row=1, column=0)
+
+        self.var_heater = tk.StringVar(self)
+        self.entry_heater = ttk.Entry(self, textvariable=self.var_heater,
+            justify='center', width=12)
+        self.entry_heater.grid(row=1, column=2)
+
+        # Buttons
+        self.button_flow_man = ttk.Button(self, text='Set flow',
+            command=self.Set_flow, width=12)
+        self.button_flow_man.grid(row=2, column=0)
+
+        self.button_heater_man = ttk.Button(self, text='Set heater',
+            command=self.Set_heater, width=12)
+        self.button_heater_man.grid(row=2, column=2)
+
+        self.button_flow_auto = ttk.Button(self, text='Auto flow',
+            command=self.Auto_flow, width=12)
+        self.button_flow_auto.grid(row=3, column=0)
+
+        self.button_heater_auto = ttk.Button(self, text='Auto heater',
+            command=self.Auto_heater, width=12)
+        self.button_heater_auto.grid(row=3, column=2)
+
+
+    def Set_flow(self):
+        '''Confirms written values and sends to iTC'''
+        logger.info('Setting manual flow to: '+self.var_flow)
+
+
+    def Set_heater(self):
+        '''Confirms written values and sends to iTC'''
+        logger.info('Setting manual heater to '+self.var_heater)
+
+
+    def Auto_flow(self):
+        '''Enables automatic flow control'''
+        logger.info('Setting flow control to automatic')
+
+
+    def Auto_heater(self):
+        '''Enables automatic heater control'''
+        logger.info('Setting heater control to automatic')
+
+
+    def Update(self, tlog):
+        '''Updates values from iTC
+            (time, temperature, setpoint, heater, flow, power)'''
+        logger.info('Updating control values'+ str(tlog[3:4]))
+        self.var_heater.set(tlog[3])
+        self.var_flow.set(tlog[4])
 
 
 
