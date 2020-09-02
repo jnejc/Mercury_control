@@ -205,7 +205,12 @@ class SetT(tk.LabelFrame):
 
     def Set(self):
         '''Confirms written values and sends to iTC'''
-        values = [self.var_set.get()]
+        values = [
+            self.var_set.get(),
+            self.var_rate.get(),
+            'ON' if self.var_ramp.get() else 'OFF'
+            ]
+        logger.debug(values)
         self.ports.Set_Tset(self.parent.var_sens.get(), values)
 
     

@@ -80,7 +80,7 @@ class Comport():
             msg = 'No permission to change the adressed parameter: '+string
 
         if msg:
-            logger.info(msg)
+            logger.error(msg)
             if warn:
                 messagebox.showerror('COMport error', msg)
             return None
@@ -223,13 +223,18 @@ class Ports():
 
 
     def Set_Tset(self, sens, values):
-        '''Sets the parameters from the set frame'''
-        t_set = values[0]
-        logger.info('Setting temperature to: '+t_set+' K')
-        x = self.itc.__dict__[sens].Set_option('TSET', t_set)
-        logger.info(x)
-
+        '''Sets the parameters from the set frame
+            values: (setpoint, ramp, ramp_enable)'''
+        # First ramp rates, then temperature!
+        # Check for errors. Probably can be omitted and done lower
+        if not self.itc.__dict__[sens].Set_option('RENA', values[2]):
+            logger.error('Failed to set ramp rate to '+values[2]+x)
+        if not self.itc.__dict__[sens].Set_option('RSET', values[1]):
+            logger.error('Failed to set ramp rate to '+values[1]+x)
+        if not self.itc.__dict__[sens].Set_option('TSET', values[0]):
+            logger.error('Failed to set T to '+values[0]+x)
     
+
     def Get_Tmanual(self, sens):
         '''Gets the parameters reqired to update the manual bar'''
         heater = self.itc.__dict__[sens].Read_option('HSET')
