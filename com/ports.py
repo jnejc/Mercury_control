@@ -221,6 +221,14 @@ class Ports():
 
         return(setpoint, ramp, ramp_enable)
 
+
+    def Set_Tset(self, sens, values):
+        '''Sets the parameters from the set frame'''
+        t_set = values[0]
+        logger.info('Setting temperature to: '+t_set+' K')
+        x = self.itc.__dict__[sens].Set_option('TSET', t_set)
+        logger.info(x)
+
     
     def Get_Tmanual(self, sens):
         '''Gets the parameters reqired to update the manual bar'''

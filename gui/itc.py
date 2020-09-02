@@ -205,7 +205,8 @@ class SetT(tk.LabelFrame):
 
     def Set(self):
         '''Confirms written values and sends to iTC'''
-        logger.info('Setting Temperature')
+        values = [self.var_set.get()]
+        self.ports.Set_Tset(self.parent.var_sens.get(), values)
 
     
     def Update(self, tset):
