@@ -308,45 +308,40 @@ class Manual(tk.LabelFrame):
     def Widgets(self):
         '''Shapes the frame's widgets'''
         # Labels
-        ttk.Label(self, text='Flow %').grid(row=0, column=0)
-        ttk.Label(self, text='Heater %').grid(row=0, column=2)
+        ttk.Label(self, text='Heater %').grid(row=0, column=0)
+        ttk.Label(self, text='Flow %').grid(row=0, column=2)
 
         # Spacer
         ttk.Label(self, text='  ').grid(row=0,column=1)
         self.grid_columnconfigure(1, weight=1) # Alows stretch and centering
 
         # Entries
-        self.var_flow = tk.StringVar(self)
-        self.entry_flow = ttk.Entry(self, textvariable=self.var_flow,
-            justify='center', width=12)
-        self.entry_flow.grid(row=1, column=0)
-
         self.var_heater = tk.StringVar(self)
         self.entry_heater = ttk.Entry(self, textvariable=self.var_heater,
             justify='center', width=12)
-        self.entry_heater.grid(row=1, column=2)
+        self.entry_heater.grid(row=1, column=0)
+
+        self.var_flow = tk.StringVar(self)
+        self.entry_flow = ttk.Entry(self, textvariable=self.var_flow,
+            justify='center', width=12)
+        self.entry_flow.grid(row=1, column=2)
 
         # Buttons
-        self.button_flow_man = ttk.Button(self, text='Set flow',
-            command=self.Set_flow, width=12)
-        self.button_flow_man.grid(row=2, column=0)
-
         self.button_heater_man = ttk.Button(self, text='Set heater',
             command=self.Set_heater, width=12)
-        self.button_heater_man.grid(row=2, column=2)
+        self.button_heater_man.grid(row=2, column=0)
 
-        self.button_flow_auto = ttk.Button(self, text='Auto flow',
-            command=self.Auto_flow, width=12)
-        self.button_flow_auto.grid(row=3, column=0)
+        self.button_flow_man = ttk.Button(self, text='Set flow',
+            command=self.Set_flow, width=12)
+        self.button_flow_man.grid(row=2, column=2)
 
         self.button_heater_auto = ttk.Button(self, text='Auto heater',
             command=self.Auto_heater, width=12)
-        self.button_heater_auto.grid(row=3, column=2)
+        self.button_heater_auto.grid(row=3, column=0)
 
-
-    def Set_flow(self):
-        '''Confirms written values and sends to iTC'''
-        logger.info('Setting manual flow to: '+self.var_flow)
+        self.button_flow_auto = ttk.Button(self, text='Auto flow',
+            command=self.Auto_flow, width=12)
+        self.button_flow_auto.grid(row=3, column=2)
 
 
     def Set_heater(self):
@@ -354,14 +349,19 @@ class Manual(tk.LabelFrame):
         logger.info('Setting manual heater to '+self.var_heater)
 
 
-    def Auto_flow(self):
-        '''Enables automatic flow control'''
-        logger.info('Setting flow control to automatic')
+    def Set_flow(self):
+        '''Confirms written values and sends to iTC'''
+        logger.info('Setting manual flow to: '+self.var_flow)
 
 
     def Auto_heater(self):
         '''Enables automatic heater control'''
         logger.info('Setting heater control to automatic')
+
+
+    def Auto_flow(self):
+        '''Enables automatic flow control'''
+        logger.info('Setting flow control to automatic')
 
 
     def Update(self, tlog):
