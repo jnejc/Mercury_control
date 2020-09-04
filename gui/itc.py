@@ -354,25 +354,58 @@ class Manual(tk.LabelFrame):
 
     def Set_heater(self):
         '''Confirms written values and sends to iTC'''
-        logger.info('Setting manual heater to '+self.var_heater.get())
-        self.var_heater_check.set(False)
+        # Get params
+        sens = self.parent.var_sens.get()
+        value = self.var_heater.get()
+        # Log
+        logger.info('Setting manual heater to '+value)
+        # Change to manual (PID controll OFF)
+        if self.ports.itc.__dict__[sens].Set_option('ENAB', 'OFF'):
+            self.var_heater_check.set(False)
+            # Set new value
+            if not self.ports.itc.__dict__[sens].Set_option('HSET', value):
+                logger.error('Failed to set heater to '+value)
+        else: logger.error('Failed to disable PID control')
 
 
     def Set_flow(self):
         '''Confirms written values and sends to iTC'''
-        logger.info('Setting manual flow to: '+self.var_flow.get())
-        self.var_flow_check.set(False)
+        # Get params
+        sens = self.parent.var_sens.get()
+        value = self.var_flow.get()
+        # Log
+        logger.info('Setting manual flow to: '+value)
+        # Change to manual (flow control OFF)
+        if self.ports.itc.__dict__[sens].Set_option('FAUT', 'OFF'):
+            self.var_flow_check.set(False)
+            # Set new value
+            if not self.ports.itc.__dict__[sens].Set_option('FLSET', value):
+                logger.error('Failed to set flow to '+value)
+        else: logger.error('Failed to disable auto flow')
+
 
     def Auto_heater(self):
         '''Enables automatic heater control'''
+        # get current sensor
+        sens = self.parent.var_sens.get()
+        # Log
         logger.info('Setting heater control to automatic')
-        self.var_heater_check.set(True)
-
+        # Send to iTC, edit checkbox when sucessfull
+        if self.ports.itc.__dict__[sens].Set_option('ENAB', 'ON'):
+            self.var_heater_check.set(True)
+        else: logger.error('Failed to enable auto heater control!')
+        
 
     def Auto_flow(self):
         '''Enables automatic flow control'''
+        # get current sensor
+        sens = self.parent.var_sens.get()
+        # Log
         logger.info('Setting flow control to automatic')
-        self.var_flow_check.set(True)
+        # Send to iTC, edit checkbox when sucessfull
+        if self.ports.itc.__dict__[sens].Set_option('FAUT', 'ON'):
+            self.var_flow_check.set(True)
+        else: logger.error('Failed to enable auto flow control!')
 
 
     def Update(self, tmanual):

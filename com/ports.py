@@ -228,11 +228,11 @@ class Ports():
         # First ramp rates, then temperature!
         # Check for errors. Probably can be omitted and done lower
         if not self.itc.__dict__[sens].Set_option('RENA', values[2]):
-            logger.error('Failed to set ramp rate to '+values[2]+x)
+            logger.error('Failed to set ramp rate to '+values[2])
         if not self.itc.__dict__[sens].Set_option('RSET', values[1]):
-            logger.error('Failed to set ramp rate to '+values[1]+x)
+            logger.error('Failed to set ramp rate to '+values[1])
         if not self.itc.__dict__[sens].Set_option('TSET', values[0]):
-            logger.error('Failed to set T to '+values[0]+x)
+            logger.error('Failed to set T to '+values[0])
     
 
     def Get_Tmanual(self, sens):
