@@ -38,27 +38,17 @@ class ITC_frame(tk.Frame):
         self.frame_manual = Manual(self, self.ports)
         self.frame_manual.pack(side='top', fill='x', padx=5, pady=5)
 
-        # Loop frame
-        self.frame_loop = Loop(self, self.ports)
-        self.frame_loop.pack(side='top', fill='x', padx=5, pady=5)
+        # # Loop frame
+        # self.frame_loop = Loop(self, self.ports)
+        # self.frame_loop.pack(side='top', fill='x', padx=5, pady=5)
 
-        # Heater limits frame
-        self.frame_limits = Limits(self, self.ports)
-        self.frame_limits.pack(side='top', fill='x', padx=5, pady=5)
+        # # Heater limits frame
+        # self.frame_limits = Limits(self, self.ports)
+        # self.frame_limits.pack(side='top', fill='x', padx=5, pady=5)
 
         # Select sensor frame
-        self.frame_sensor = tk.Frame(self)
+        self.frame_sensor = Select(self, self.ports)
         self.frame_sensor.pack(side='top', fill='x', padx=5, pady=5)
-        ttk.Label(self.frame_sensor, text='Sensor select').grid(row=0,
-            column=0)
-        ttk.Label(self.frame_sensor, text='  ').grid(row=0, column=1)
-        self.grid_columnconfigure(1, weight=1) # Alows stretch and centering
-        self.list_sens = List_sensors('TEMP', self.ports.itc)
-        self.var_sens = tk.StringVar(self)
-        self.var_sens.set('MB1.T1') # Default board
-        self.combo_sens = ttk.Combobox(self.frame_sensor, width=7, state='readonly',
-            values=self.list_sens, textvar=self.var_sens)
-        self.combo_sens.grid(row=0, column=2)
 
         # Load parameters
         self.button_load = ttk.Button(self, text='Load from iTC',
@@ -73,13 +63,13 @@ class ITC_frame(tk.Frame):
         tmanual = self.ports.Get_Tmanual(self.var_sens.get())
         tloop = self.ports.Get_Tloop(self.var_sens.get())
         tstatus = self.ports.Get_Tstatus(self.var_sens.get(), tloop[3])
-        tlimits = self.ports.Get_Tlimits(self.var_sens.get(), tloop[3])
+        #tlimits = self.ports.Get_Tlimits(self.var_sens.get(), tloop[3])
 
         self.frame_status.Update(tstatus)
         self.frame_set.Update(tset)
         self.frame_manual.Update(tmanual)
-        self.frame_loop.Update(tloop)
-        self.frame_limits.Update(tlimits)
+        #self.frame_loop.Update(tloop)
+        #self.frame_limits.Update(tlimits)
 
 
 
@@ -456,4 +446,35 @@ class Limits(tk.LabelFrame):
         self.var_heat.set(tlimits[0])
         self.var_tmax.set(Strip_T(tlimits[1]))
         self.var_tmin.set(Strip_T(tlimits[2]))
+
+
+class Select(tk.Frame):
+    '''Sensor frame and inner objects'''
+    def __init__(self, parent, ports):
+        '''Calls init method of LabelFrame and fills up frame'''
+        tk.Frame.__init__(self, parent)
+        self.parent = parent
+        self.ports = ports
+        self.Widgets()
+
+
+    def Widgets(self):
+        '''Shapes the frame's widgets'''
+        # Labels
+        ttk.Label(self, text='Sensor select').grid(row=0,
+            column=0, sticky='E')
+
+        # Spacer
+        ttk.Label(self, text='  ').grid(row=0, column=1)
+        self.grid_columnconfigure(1, weight=1) # Alows stretch and centering
+
+        # Select sensor frame
+        self.list_sens = List_sensors('TEMP', self.ports.itc)
+        self.var_sens = tk.StringVar(self)
+        self.parent.var_sens = self.var_sens # give var_sens to itc frame
+        self.var_sens.set('MB1.T1') # Default board
+        self.combo_sens = ttk.Combobox(self, state='readonly',
+            values=self.list_sens, textvar=self.var_sens, width=7)
+        self.combo_sens.grid(row=0, column=2)
+
 

@@ -320,8 +320,8 @@ class Ports():
     def Get_Fsens(self, lvl):
         '''Gets parameters to update sensor status'''
         time = datetime.now()
-        helium_bar = self.ips.__dict__[lvl].Read_option('HLEV')
-        nitrogen_bar = self.ips.__dict__[lvl].Read_option('NLEV')
+        helium_bar = self.ips.__dict__[lvl].Read_option('HLEV', warn=False)
+        nitrogen_bar = self.ips.__dict__[lvl].Read_option('NLEV', warn=False)
 
         return(time, helium_bar, nitrogen_bar)
 
