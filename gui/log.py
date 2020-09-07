@@ -18,6 +18,8 @@ import os # For compiling directory paths
 import logging
 logger = logging.getLogger('log')     # Set the logger
 
+
+
 class Log_frame(tk.Frame):
     '''The plotting and logging frame'''
     def __init__(self, parent, ports):
@@ -262,3 +264,6 @@ class Temperature_plot(Log_plot):
         tlog = self.ports.Get_Tlog(sensor)
         logger.debug(tlog)
         return tlog
+
+
+        

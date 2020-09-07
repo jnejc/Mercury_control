@@ -12,8 +12,9 @@ from gui.log import Log_frame
 import logging
 logger = logging.getLogger('log')     # Set the logger
 
+# Popup windows
 from nmr.gui import main
-
+from gui.cryo import Cryo_application
 
 
 
@@ -92,6 +93,8 @@ class Menu(tk.Menu):
             command=root.destroy)
         self.file.add_command(label='Open TNMR application',
             command=self.Run_TNMR)
+        self.file.add_command(label='Plot cryogen log',
+            command=self.Run_cryo)
         self.add_cascade(label='File', menu=self.file)
 
         # Edit cascade
@@ -106,6 +109,11 @@ class Menu(tk.Menu):
         main.TNMR_application(TNMR_window)
 
 
+    def Run_cryo(self):
+        '''Opens cyogen log in separate window'''
+        cryo_window = tk.Toplevel(self.root)
+        Cryo_application(cryo_window)
+
 
 
 def Error_incomplete():
@@ -117,3 +125,5 @@ def Error_incomplete():
 if __name__ == '__main__':
     #get it running
     pass
+
+

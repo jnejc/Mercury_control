@@ -71,6 +71,9 @@ logger = logging.getLogger('log')
 Configure_logger(logger)
 informer = logging.getLogger('info')
 Configure_informer(informer)
+# Remove low logs from matplotlib
+mpl_logger = logging.getLogger('matplotlib')
+mpl_logger.setLevel(logging.WARNING)
 
 
 
