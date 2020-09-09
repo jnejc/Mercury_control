@@ -271,11 +271,12 @@ class Switch(tk.LabelFrame):
         # Get PSU and magnet fields for safety check
         field_psu = self.ports.ips.__dict__[sens].Read_option('FLD', warn=False)
         field_pers = self.ports.ips.__dict__[sens].Read_option('PFLD', warn=False)
-        logger.info((field_psu, field_pers))
         field_psu = float(field_psu[:-1])
         field_pers = float(field_pers[:-1])
         if abs(field_psu-field_pers) > SWITCH_TOLERANCE:
             logger.error('Persistent field differs from current field')
+            messagebox.showerror('Could not switch heater!',
+                'The persistent field and current field are not the same!')
         else :
             # Log
             logger.info('Setting switch heater mode to: '+ value)
@@ -437,6 +438,8 @@ class Sensors(tk.LabelFrame):
         '''Function for continous logging of sensor data into file'''
         # Fetch fresh values
         log = self.ports.Get_Fsens(self.parent.frame_select.var_lvl.get())
+        # Update self
+        self.Update(log[1:])
 
         # Define file parameters
         file_name = log[0].strftime('%Y%m%d') + self.file_end

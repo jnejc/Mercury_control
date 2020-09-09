@@ -180,18 +180,18 @@ class Ports():
         # Warn if devices were not found
         if self.ips == None:
             logger.info('IPS not found!')
-            msg = 'IPS not found, enable remote control and restart program'
-            messagebox.showerror('Missing IPS', msg)
+            messagebox.showerror('Missing IPS',
+                'IPS not found, enable remote control and restart program')
 
         if self.itc == None:
             logger.info('ITC not found!')
-            msg = 'ITC not found, enable remote control and restart program'
-            messagebox.showerror('Missing ITC', msg)
+            messagebox.showerror('Missing ITC',
+                'ITC not found, enable remote control and restart program')
 
     
     # iTC reading
     def Get_Tlog(self, sens):
-        '''Gets the parameters required for logging'''
+        '''Gets the parameters required for logging without warnings'''
         time = datetime.now()
         temperature = self.itc.__dict__[sens].Read_option('TEMP', warn=False)
         setpoint = self.itc.__dict__[sens].Read_option('TSET', warn=False)
@@ -319,11 +319,11 @@ class Ports():
         '''Gets parameters to update sensor status'''
         helium_bar = self.ips.__dict__[lvl].Read_option('HLEV')
         nitrogen_bar = self.ips.__dict__[lvl].Read_option('NLEV')
-        helium_res = self.ips.__dict__[lvl].Read_option('HRES')
-        nitrogen_fr = self.ips.__dict__[lvl].Read_option('FREQ')
-        temperature = self.ips.__dict__[temp].Read_option('TEMP')
+        #helium_res = self.ips.__dict__[lvl].Read_option('HRES')
+        #nitrogen_fr = self.ips.__dict__[lvl].Read_option('FREQ')
+        #temperature = self.ips.__dict__[temp].Read_option('TEMP')
 
-        return(helium_bar, nitrogen_bar, helium_res, nitrogen_fr, temperature)
+        return(helium_bar, nitrogen_bar)
 
 
     def Get_Fsens(self, lvl):
