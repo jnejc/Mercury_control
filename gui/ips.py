@@ -17,6 +17,7 @@ logger = logging.getLogger('log')     # Set the logger
 
 # Global variables
 LOG_TIME = 20*60*1000 # 20 min
+SWITCH_TOLERANCE = 0.001 # Heater switch tolerance
 
 class IPS_frame(tk.Frame):
     '''The controll frame for IPS'''
@@ -25,6 +26,9 @@ class IPS_frame(tk.Frame):
         self.parent = parent
         self.ports = ports
         self.Widgets()
+
+        # Fill in parameters from iPS
+        self.Load_parameters()
 
 
     def Widgets(self):
@@ -80,6 +84,16 @@ class IPS_frame(tk.Frame):
         self.frame_switch.Update(fmode[0])
         self.frame_ramp.Update(fmode[1])
         self.frame_sensors.Update(fsensors)
+
+    
+    def Monitor_ramp(self):
+        '''Talks to iPS and refreshes values in ramp and status'''
+        flog = self.ports.Get_Fstatus(self.frame_select.var_sens.get())
+        fmode = self.ports.Get_Fmode(self.frame_select.var_sens.get())
+
+        self.frame_status.Update(flog)
+        self.frame_switch.Update(fmode[0])
+        self.frame_ramp.Update(fmode[1])
 
 
 
@@ -197,7 +211,15 @@ class SetF(tk.LabelFrame):
 
     def Set(self):
         '''Confirms written values and sends to iPS'''
-        logger.info('Setting Field')
+        values = [
+            self.var_set.get(),
+            self.var_rate.get()
+        ]
+        logger.info(('Setting Field:', values))
+        sens = self.parent.frame_select.var_sens.get()
+        logger.debug(sens)
+        self.ports.Set_Fset(sens, values)
+
 
 
     def Update(self, fset):
@@ -229,10 +251,10 @@ class Switch(tk.LabelFrame):
         self.var_switch = tk.IntVar(self)
         self.var_switch.set(-1) # Doesnt show an option on start
         self.radio_switch1 = ttk.Radiobutton(self, text='On', value=0,
-            variable=self.var_switch, command=self.Heater_switch)
+            variable=self.var_switch)
         self.radio_switch1.grid(row=1, column=0, sticky='W')
         self.radio_switch2 = ttk.Radiobutton(self, text='Off', value=1,
-            variable=self.var_switch, command=self.Heater_switch)
+            variable=self.var_switch)
         self.radio_switch2.grid(row=2, column=0, sticky='W')
 
         # Button
@@ -240,16 +262,26 @@ class Switch(tk.LabelFrame):
             command=self.Set, width=10)
         self.button_set.grid(row=8, column=0)
 
-
-    def Heater_switch(self):
-        '''Change when selecting a heater switch option'''
-        logger.info('Changing heater switch to: '
-            + self.list_switch[self.var_switch.get()])
-
     
     def Set(self):
         '''Confirms written values and sends to iPS'''
-        logger.info('Setting switch heater mode')
+        # Get params
+        sens = self.parent.frame_select.var_sens.get()
+        value = self.list_switch[self.var_switch.get()]
+        # Get PSU and magnet fields for safety check
+        field_psu = self.ports.ips.__dict__[sens].Read_option('FLD', warn=False)
+        field_pers = self.ports.ips.__dict__[sens].Read_option('PFLD', warn=False)
+        logger.info((field_psu, field_pers))
+        field_psu = float(field_psu[:-1])
+        field_pers = float(field_pers[:-1])
+        if abs(field_psu-field_pers) > SWITCH_TOLERANCE:
+            logger.error('Persistent field differs from current field')
+        else :
+            # Log
+            logger.info('Setting switch heater mode to: '+ value)
+            # Send value to iPS
+            if not self.ports.ips.__dict__[sens].Set_option('SWHT', value):
+                logger.error('Failed to set switch heater to '+value)
 
 
     def Update(self, mode):
@@ -270,52 +302,76 @@ class Ramp(tk.LabelFrame):
             pady=5)
         self.parent = parent
         self.ports = ports
+
+        # List of possible states
+        self.list_ramp = ['HOLD', 'RTOS', 'RTOZ', 'CLMP']
+        self.dict_ramp = {
+            'HOLD': 'Hold',
+            'RTOS': 'To set',
+            'RTOZ': 'To zero',
+            'CLMP': 'Clamp'
+        }
+        self.var_ramp = tk.StringVar(self)
         self.Widgets()
 
 
     def Widgets(self):
         '''Shapes the frame's widgets'''
         # Spacer
-        self.grid_columnconfigure(0, weight=1) # Alows stretch and centering
+        ttk.Label(self, text='  ').grid(row=1, column=1)
+        self.grid_columnconfigure(1, weight=1) # Alows stretch and centering
 
-        # Radio button ramp status
-        self.list_ramp = ['HOLD', 'RTOS', 'RTOZ', 'CLMP']
-        self.var_ramp = tk.IntVar(self)
-        self.var_ramp.set(-1) # Doesnt show an option on start
-        self.radio_ramp1 = ttk.Radiobutton(self, text='Hold', value=0,
-            variable=self.var_ramp, command=self.Ramp)
-        self.radio_ramp1.grid(row=4, column=0, sticky='W')
-        self.radio_ramp2 = ttk.Radiobutton(self, text='To set', value=1,
-            variable=self.var_ramp, command=self.Ramp)
-        self.radio_ramp2.grid(row=5, column=0, sticky='W')
-        self.radio_ramp3 = ttk.Radiobutton(self, text='To zero', value=2,
-            variable=self.var_ramp, command=self.Ramp)
-        self.radio_ramp3.grid(row=6, column=0, sticky='W')
-        self.radio_ramp4 = ttk.Radiobutton(self, text='Clamp', value=3,
-            variable=self.var_ramp, command=self.Ramp)
-        self.radio_ramp4.grid(row=7, column=0, sticky='W')
+        # Buttons
+        self.button_hold = ttk.Button(self, text='Hold',
+            command=lambda:self.Set('HOLD'), width=12)
+        self.button_hold.grid(row=1, column=0)
 
-        # Button
-        self.button_set = ttk.Button(self, text='Set',
-            command=self.Set, width=10)
-        self.button_set.grid(row=8, column=0)
+        self.button_clamp = ttk.Button(self, text='Clamp',
+            command=lambda:self.Set('CLMP'), width=12)
+        self.button_clamp.grid(row=1, column=2)
 
-    
-    def Ramp(self):
-        '''Change when selecting a ramp mode option'''
-        logger.info('Changing ramp mode to: '
-            + self.list_ramp[self.var_ramp.get()])
+        self.button_to_set = ttk.Button(self, text='To set',
+            command=lambda:self.Set('RTOS'), width=12)
+        self.button_to_set.grid(row=2, column=0)
+
+        self.button_to_zero = ttk.Button(self, text='To zero',
+            command=lambda:self.Set('RTOZ'), width=12)
+        self.button_to_zero.grid(row=2, column=2)
+
+        # Show last state
+        ttk.Label(self, text='Last state:').grid(row=0, column=0, sticky='E')
+        self.entry_ramp = ttk.Entry(self, textvariable=self.var_ramp,
+            justify='center', width=10, state='readonly')
+        self.entry_ramp.grid(row=0, column=2)
 
 
-    def Set(self):
-        '''Confirms written values and sends to iPS'''
-        logger.info('Setting ramp mode')
+    def Set(self, mode):
+        '''Sends the button command to iPS'''
+        # Get sensor
+        sens = self.parent.frame_select.var_sens.get()
+        # Log
+        logger.info('Setting ramp mode: '+mode)
+        self.var_ramp.set(self.dict_ramp[mode])
+        # Send command
+        if not self.ports.ips.__dict__[sens].Set_option('ACTN', mode):
+            logger.error('Failed to set switch heater to '+mode)
+        self.Monitor()
+
+
+    def Monitor(self):
+        '''Keeps refreshing the ramp window untill Hold is reached'''
+        self.parent.Monitor_ramp()
+
+        # Repeat untill Hold is reached
+        if self.var_ramp.get() != 'Hold':
+            self.repeat = self.after(10*1000, self.Monitor)
+        else: self.repeat = None # Remove reference to repeat event
 
     
     def Update(self, mode):
         '''Updates values from iPS'''
         logger.info('Updating ramp mode: '+ str(mode))
-        self.var_ramp.set(self.list_ramp.index(mode))
+        self.var_ramp.set(self.dict_ramp[mode])
 
 
 
@@ -339,8 +395,8 @@ class Sensors(tk.LabelFrame):
         # Labels
         ttk.Label(self, text='Helium level').grid(row=0, column=0)
         ttk.Label(self, text='Nitrogen level').grid(row=0, column=2)
-        ttk.Label(self, text='Magnet temperature').grid(row=3, column=0,
-            columnspan=3)
+        #ttk.Label(self, text='Magnet temperature').grid(row=3, column=0,
+        #    columnspan=3)
 
         # Spacer
         ttk.Label(self, text='  ').grid(row=0, column=1)
@@ -357,10 +413,13 @@ class Sensors(tk.LabelFrame):
             textvariable=self.var_freq, justify='center')
         self.entry_freq.grid(row=1, column=2)
 
+        # Temperature sensor not used yet
+        """
         self.var_temp = tk.StringVar(self)
         self.entry_temp = ttk.Entry(self, width=12, state='readonly',
             textvariable=self.var_temp, justify='center')
         self.entry_temp.grid(row=4, column=0, columnspan=3)
+        """
 
         # Status bars
         self.var_helium = tk.DoubleVar(self)
@@ -406,7 +465,8 @@ class Sensors(tk.LabelFrame):
         self.var_freq.set(fsensors[1])
         #self.var_resistance.set(fsensors[2])
         #self.var_freq.set(fsensors[3])
-        self.var_temp.set(fsensors[4])
+        # Temperature sensor not used yet
+        #self.var_temp.set(fsensors[4])
 
 
 
@@ -437,7 +497,7 @@ class Select(tk.Frame):
         # PSU board/sens
         self.list_sens = List_sensors('PSU', self.ports.ips)
         self.var_sens = tk.StringVar(self)
-        self.var_sens.set('GRPS') # Default board
+        self.var_sens.set('GRPZ') # Default board
         self.combo_sens = ttk.Combobox(self, width=7, state='readonly',
             values=self.list_sens, textvar=self.var_sens)
         self.combo_sens.grid(row=0, column=2)

@@ -18,6 +18,9 @@ class ITC_frame(tk.Frame):
         self.ports = ports
         self.Widgets()
 
+        # Fill in parameters from iTC
+        self.Load_parameters()
+
 
     def Widgets(self):
         '''Shapes the frame's widgets'''
@@ -96,7 +99,7 @@ class Status(tk.LabelFrame):
         ttk.Label(self, text='Needle position').grid(row=4, column=2)
 
         # Spacer
-        ttk.Label(self, text='  ').grid(row=0,column=1)
+        ttk.Label(self, text='  ').grid(row=0, column=1)
         self.grid_columnconfigure(1, weight=1) # Alows stretch and centering
 
         # Entries

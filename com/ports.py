@@ -297,6 +297,15 @@ class Ports():
 
         return(target_field, ramp_rate)
 
+
+    def Set_Fset(self, sens, values):
+        '''Takes the field set and rate and sends them to the iPS
+            values: (field_set, field_ramp_rate)'''
+        if not self.ips.__dict__[sens].Set_option('RFST', values[1]):
+            logger.error('Failed to set field ramp rate to '+values[1])
+        if not self.ips.__dict__[sens].Set_option('FSET', values[0]):
+            logger.error('Failed to set field rate to '+values[0])
+
     
     def Get_Fmode(self, sens):
         '''Gets parameters to update heater mode and ramp mode'''
