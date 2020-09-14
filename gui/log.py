@@ -52,6 +52,12 @@ class Log_plot(tk.Frame):
         # Set parameters
         self.y_len = len(self.y_list)
 
+        # Create directory if not existent
+        try: os.mkdir('log_files')
+        except: pass
+        try: os.mkdir(self.file_directory)
+        except: pass
+
         # Build widgets
         self.Widgets()
 
@@ -97,15 +103,33 @@ class Log_plot(tk.Frame):
 
         self.lines = list()
 
-        date_format = matplotlib.dates.DateFormatter('%H:%M:%S')
-        self.axes.xaxis.set_major_formatter(date_format)
+        # Formats x axis in date format
+        # Skip for auto settings
+        #date_format = matplotlib.dates.DateFormatter('%H:%M:%S')
+        #self.axes.xaxis.set_major_formatter(date_format)
+        self.fig.autofmt_xdate(rotation=30) # Rotated lables
+
+        # Add traces
         for i,trace in enumerate(self.y):
             line, = self.axes.plot(self.x, trace, 'o-', label=self.y_list[i])
             self.lines.append(line)
-        self.fig.autofmt_xdate(rotation=30)
+
+        # Add twin plot if enabled
+        if self.twin:
+            self.y2_len = len(self.y2_list)
+            self.y2 = [[float(y[:-1])] for y in
+                log[1+self.y_len : 1+self.y_len+self.y2_len]]
+
+            # Add second axes, sharing x axis
+            self.axes2 = self.axes.twinx() 
+            self.axes2.set_ylabel(self.y_axis)
+            for i,trace in enumerate(self.y2):
+                line, = self.axes2.plot(self.x, trace, 's-', color='tab:green',
+                    label=self.y2_list[i])
+                self.lines.append(line)
 
         # Add legends
-        self.axes.legend()
+        self.axes.legend(self.lines, [line.get_label() for line in self.lines])
 
 
     def Buttons(self):
@@ -137,11 +161,18 @@ class Log_plot(tk.Frame):
             if not None in log: # Check if all values were read
                 self.x.append(log[0])
                 for i in range(self.y_len):
-                    self.y[i].append(float(log[i+1][:-1]))
+                    self.y[i].append(float(log[i+1][:-1])) # remove K at end
                     self.lines[i].set_ydata(self.y[i])
                     self.lines[i].set_xdata(self.x)
                 self.axes.relim()
                 self.axes.autoscale_view() 
+                if self.twin:
+                    for i in range(self.y2_len):
+                        self.y2[i].append(float(log[i+1+self.y_len][:-1]))
+                        self.lines[i+self.y_len].set_ydata(self.y2[i])
+                        self.lines[i+self.y_len].set_xdata(self.x)
+                    self.axes2.relim()
+                    self.axes2.autoscale_view()
                 self.canvas.draw() # Redraw canvas
 
             # Continue logging
@@ -167,6 +198,15 @@ class Log_plot(tk.Frame):
                 self.lines[i].set_xdata(self.x)
             self.axes.relim()
             self.axes.autoscale_view() 
+            # Clear the twin
+            if self.twin:
+                for i in range(self.y2_len):
+                    self.y2[i] = [self.y2[i][-1]]
+                    self.lines[i+self.y_len].set_ydata(self.y2[i])
+                    self.lines[i+self.y_len].set_xdata(self.x)
+                self.axes.relim()
+                self.axes.autoscale_view()
+
             self.canvas.draw() # Redraw canvas
 
 
@@ -219,13 +259,9 @@ class Field_plot(Log_plot):
         self.y_axis = 'Field (T)'
         self.y_list = ['Set F', 'Current F', 'Peristent F']
         self.file_end = '_Field.log'
-
-        # Create log directory
         self.file_directory = os.path.join('log_files','field')
-        try:
-            os.mkdir('log_files')
-            os.mkdir(self.file_directory)
-        except: pass
+
+        self.twin = False
 
         Log_plot.__init__(self, parent, ports)
 
@@ -248,12 +284,11 @@ class Temperature_plot(Log_plot):
         self.y_axis = 'Temperature (K)'
         self.y_list = ['Set T', 'Current T']
         self.file_end = '_Temp.log'
-
-        # Create log directory
         self.file_directory = os.path.join('log_files','temperature')
-        try:
-            os.mkdir(self.file_directory)
-        except: pass
+
+        # Add second axis plot
+        self.twin = True
+        self.y2_list = ['Probe T']
 
         Log_plot.__init__(self, parent, ports)
         

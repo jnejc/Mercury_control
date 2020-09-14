@@ -364,7 +364,7 @@ class Ramp(tk.LabelFrame):
         self.parent.Monitor_ramp()
 
         # Repeat untill Hold is reached
-        if self.var_ramp.get() != 'Hold':
+        if self.var_ramp.get() not in ['Hold', 'Clamp']:
             self.repeat = self.after(10*1000, self.Monitor)
         else: self.repeat = None # Remove reference to repeat event
 
@@ -385,9 +385,15 @@ class Sensors(tk.LabelFrame):
         self.ports = ports
         self.Widgets()
 
-        # Start logging on self
         self.file_end = '_Sensor.log'
+        # Create directory if non existent
         self.file_directory = os.path.join('log_files','sensors')
+        try: os.mkdir('log_files')
+        except: pass
+        try: os.mkdir(self.file_directory)
+        except: pass
+        
+        # Start logging on self
         self.logging = self.after(10, self.Log)
 
 

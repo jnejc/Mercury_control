@@ -190,7 +190,7 @@ class Ports():
 
     
     # iTC reading
-    def Get_Tlog(self, sens):
+    def Get_Tlog(self, sens, sens2='DB6.T1'):
         '''Gets the parameters required for logging without warnings'''
         time = datetime.now()
         temperature = self.itc.__dict__[sens].Read_option('TEMP', warn=False)
@@ -198,7 +198,9 @@ class Ports():
         heater = self.itc.__dict__[sens].Read_option('HSET', warn=False)
         flow = self.itc.__dict__[sens].Read_option('FLSET', warn=False)
 
-        return(time, setpoint, temperature, heater, flow)
+        temp_probe = self.itc.__dict__[sens2].Read_option('TEMP', warn=False)
+
+        return(time, setpoint, temperature, temp_probe, heater, flow)
 
 
     def Get_Tstatus(self, sens, htr):
