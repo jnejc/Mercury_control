@@ -97,10 +97,8 @@ class Menu(tk.Menu):
             command=self.Run_cryo)
         self.add_cascade(label='File', menu=self.file)
 
-        # Edit cascade
-        self.edit = tk.Menu(self, tearoff=0)
-        self.edit.add_command(label='Delete menu', command=self.destroy)
-        self.add_cascade(label='Edit', menu=self.edit)
+        # Cryo log option
+        self.add_command(label='Cryo log', command=self.Run_cryo)
 
 
     def Run_TNMR(self):
