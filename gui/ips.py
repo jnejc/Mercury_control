@@ -392,7 +392,7 @@ class Sensors(tk.LabelFrame):
         except: pass
         try: os.mkdir(self.file_directory)
         except: pass
-        
+
         # Start logging on self
         self.logging = self.after(10, self.Log)
 
@@ -457,7 +457,7 @@ class Sensors(tk.LabelFrame):
             line = []
             line.append(log[0].strftime('%H:%M:%S'))
             for i in log[1:]:
-                line.append(i)
+                line.append(float(i[:-1])) # Strip the % unit
             writer.writerow(line)
 
         # Continue logging
