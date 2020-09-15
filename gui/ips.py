@@ -18,6 +18,11 @@ logger = logging.getLogger('log')     # Set the logger
 # Global variables
 LOG_TIME = 20*60*1000 # 20 min
 SWITCH_TOLERANCE = 0.001 # Heater switch tolerance
+MAIN_PSU = 'GRPZ' # Main board for driving magnet
+MAIN_LVL = 'DB5.L1' # Main board for cryo level sensors
+MAIN_TEMP = 'MB1.T1' # Main board for temperature sensor
+
+
 
 class IPS_frame(tk.Frame):
     '''The controll frame for IPS'''
@@ -506,25 +511,25 @@ class Select(tk.Frame):
         # PSU board/sens
         self.list_sens = List_sensors('PSU', self.ports.ips)
         self.var_sens = tk.StringVar(self)
-        self.var_sens.set('GRPZ') # Default board
+        self.var_sens.set(MAIN_PSU) # Default board
         self.combo_sens = ttk.Combobox(self, width=7, state='disabled',
             values=self.list_sens, textvar=self.var_sens)
         self.combo_sens.grid(row=0, column=2)
         # Disabled to prevent tinkering, can change to 'readonly'
 
-        # Select lvl frame
+        # Select lvl board
         self.list_lvl = List_sensors('LVL', self.ports.ips)
         self.var_lvl = tk.StringVar(self)
-        self.var_lvl.set('DB5.L1') # Default board
+        self.var_lvl.set(MAIN_LVL) # Default board
         self.combo_lvl = ttk.Combobox(self, width=7, state='disabled',
             values=self.list_lvl, textvar=self.var_lvl)
         self.combo_lvl.grid(row=1, column=2)
         # Disabled to prevent tinkering, can change to 'readonly'
 
-        # Select psu frame
+        # Select temperature board
         self.list_temp = List_sensors('TEMP', self.ports.ips)
         self.var_temp = tk.StringVar(self)
-        self.var_temp.set('MB1.T1') # Default board
+        self.var_temp.set(MAIN_TEMP) # Default board
         self.combo_temp = ttk.Combobox(self, width=7, state='disabled',
             values=self.list_temp, textvar=self.var_temp)
         self.combo_temp.grid(row=2, column=2)

@@ -10,6 +10,11 @@ from gui.funct import Strip_T, List_sensors
 import logging
 logger = logging.getLogger('log')     # Set the logger
 
+# Global variables
+MAIN_SENSOR = 'MB1.T1' # Sensor used for temperature loop
+
+
+
 class ITC_frame(tk.Frame):
     '''The controll frame for ITC'''
     def __init__(self, parent, ports):
@@ -508,7 +513,7 @@ class Select(tk.Frame):
         self.list_sens = List_sensors('TEMP', self.ports.itc)
         self.var_sens = tk.StringVar(self)
         self.parent.var_sens = self.var_sens # give var_sens to itc frame
-        self.var_sens.set('MB1.T1') # Default board
+        self.var_sens.set(MAIN_SENSOR) # Default board
         self.combo_sens = ttk.Combobox(self, state='disabled',
             values=self.list_sens, textvar=self.var_sens, width=7)
         # Disabled to prevent tinkering, can change to 'readonly'
