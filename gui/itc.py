@@ -509,8 +509,9 @@ class Select(tk.Frame):
         self.var_sens = tk.StringVar(self)
         self.parent.var_sens = self.var_sens # give var_sens to itc frame
         self.var_sens.set('MB1.T1') # Default board
-        self.combo_sens = ttk.Combobox(self, state='readonly',
+        self.combo_sens = ttk.Combobox(self, state='disabled',
             values=self.list_sens, textvar=self.var_sens, width=7)
+        # Disabled to prevent tinkering, can change to 'readonly'
         self.combo_sens.grid(row=0, column=2)
 
 

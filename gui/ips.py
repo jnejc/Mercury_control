@@ -507,24 +507,27 @@ class Select(tk.Frame):
         self.list_sens = List_sensors('PSU', self.ports.ips)
         self.var_sens = tk.StringVar(self)
         self.var_sens.set('GRPZ') # Default board
-        self.combo_sens = ttk.Combobox(self, width=7, state='readonly',
+        self.combo_sens = ttk.Combobox(self, width=7, state='disabled',
             values=self.list_sens, textvar=self.var_sens)
         self.combo_sens.grid(row=0, column=2)
+        # Disabled to prevent tinkering, can change to 'readonly'
 
         # Select lvl frame
         self.list_lvl = List_sensors('LVL', self.ports.ips)
         self.var_lvl = tk.StringVar(self)
         self.var_lvl.set('DB5.L1') # Default board
-        self.combo_lvl = ttk.Combobox(self, width=7, state='readonly',
+        self.combo_lvl = ttk.Combobox(self, width=7, state='disabled',
             values=self.list_lvl, textvar=self.var_lvl)
         self.combo_lvl.grid(row=1, column=2)
+        # Disabled to prevent tinkering, can change to 'readonly'
 
         # Select psu frame
         self.list_temp = List_sensors('TEMP', self.ports.ips)
         self.var_temp = tk.StringVar(self)
         self.var_temp.set('MB1.T1') # Default board
-        self.combo_temp = ttk.Combobox(self, width=7, state='readonly',
+        self.combo_temp = ttk.Combobox(self, width=7, state='disabled',
             values=self.list_temp, textvar=self.var_temp)
         self.combo_temp.grid(row=2, column=2)
+        # Disabled to prevent tinkering, can change to 'readonly'
 
 

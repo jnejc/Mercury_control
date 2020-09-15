@@ -97,11 +97,11 @@ class Cryo_application(tk.Frame):
                         '%Y%m%d%H:%M:%S')
                     # Append the non empty entries, removing %
                     try:
-                        self.y_he.append(float(row[1][:-1]))
+                        self.y_he.append(float(row[1]))
                         self.x_he.append(d)
                     except: pass
                     try:
-                        self.y_n2.append(float(row[2][:-1]))
+                        self.y_n2.append(float(row[2]))
                         self.x_n2.append(d)
                     except: pass
 
