@@ -462,7 +462,10 @@ class Sensors(tk.LabelFrame):
             line = []
             line.append(log[0].strftime('%H:%M:%S'))
             for i in log[1:]:
-                line.append(float(i[:-1])) # Strip the % unit
+                try:
+                    line.append(float(i[:-1])) # Strip the % unit
+                except TypeError:
+                    line.append('') # Write empty line, if None
             writer.writerow(line)
 
         # Continue logging

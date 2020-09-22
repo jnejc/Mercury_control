@@ -245,10 +245,13 @@ class Log_plot(tk.Frame):
             line = []
             line.append(log[0].strftime('%H:%M:%S'))
             for i in log[1:]:
-                try: # Keep if float
-                    line.append(float(i))
-                except: # Try to strip unit
-                    line.append(float(i[:-1]))
+                if i == None:
+                    line.append('')
+                else:
+                    try: # Keep if float
+                        line.append(float(i))
+                    except: # Try to strip unit
+                        line.append(float(i[:-1]))
             writer.writerow(line)
 
 
