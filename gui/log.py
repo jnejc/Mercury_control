@@ -134,85 +134,9 @@ class Log_plot(tk.Frame):
 
     def Buttons(self):
         '''The logging control buttons'''
-        # Calling functions
-        def Start_log(event=None):
-            '''Starts the logging'''
-            self.button_log['text'] = 'Stop log'
-            self.button_log['command'] = Stop_log
-            self.logging = self.button_log.after(10, Log)
-
-
-        def Stop_log(event=None):
-            '''Interrupts the logging'''
-            self.button_log['text'] = 'Start log'
-            self.button_log['command'] = Start_log
-            self.button_log.after_cancel(self.logging)
-            self.logging = None # Removes reference to logging event
-
-
-        def Log():
-            '''Actions to do for every log, and call next repetition'''
-            log = self.Update()
-
-            # Add to log file
-            self.Write_log(log)
-
-            # Add to plot lists
-            if not None in log: # Check if all values were read
-                self.x.append(log[0])
-                for i in range(self.y_len):
-                    self.y[i].append(float(log[i+1][:-1])) # remove K at end
-                    self.lines[i].set_ydata(self.y[i])
-                    self.lines[i].set_xdata(self.x)
-                self.axes.relim()
-                self.axes.autoscale_view() 
-                if self.twin:
-                    for i in range(self.y2_len):
-                        self.y2[i].append(float(log[i+1+self.y_len][:-1]))
-                        self.lines[i+self.y_len].set_ydata(self.y2[i])
-                        self.lines[i+self.y_len].set_xdata(self.x)
-                    self.axes2.relim()
-                    self.axes2.autoscale_view()
-                self.canvas.draw() # Redraw canvas
-
-            # Continue logging
-            self.logging = self.button_log.after(self.time, Log)
-
-
-        def Change_time(event=None):
-            '''Change of logging interval, as option is selected from box'''
-            logger.info('Logging interval changed to: '+self.var_time.get())
-            self.time = self.dict_times[self.var_time.get()]
-            # Logs now and continues with new interval
-            if self.button_log['text'] == 'Stop log':
-                self.button_log.after_cancel(self.logging)
-                self.logging = self.button_log.after(10, Log)
-
-
-        def Clear_plot(event=None):
-            '''Clears all but the last point in the plot and replots'''
-            self.x = [self.x[-1]]
-            for i in range(self.y_len):
-                self.y[i] = [self.y[i][-1]]
-                self.lines[i].set_ydata(self.y[i])
-                self.lines[i].set_xdata(self.x)
-            self.axes.relim()
-            self.axes.autoscale_view() 
-            # Clear the twin
-            if self.twin:
-                for i in range(self.y2_len):
-                    self.y2[i] = [self.y2[i][-1]]
-                    self.lines[i+self.y_len].set_ydata(self.y2[i])
-                    self.lines[i+self.y_len].set_xdata(self.x)
-                self.axes.relim()
-                self.axes.autoscale_view()
-
-            self.canvas.draw() # Redraw canvas
-
-
         # Buttons
         self.button_log = ttk.Button(self.frame_buttons, text='Start log',
-            command=Start_log)
+            command=self.Start_log)
         self.button_log.pack(side='left')
 
         # Select frequency
@@ -226,12 +150,87 @@ class Log_plot(tk.Frame):
             state='readonly', values=list(self.dict_times.keys()),
             textvar=self.var_time)
         self.combo_time.pack(side='left')
-        self.combo_time.bind("<<ComboboxSelected>>", Change_time)
+        self.combo_time.bind("<<ComboboxSelected>>", self.Change_time)
 
         # Button Clear plot
         self.button_clear = ttk.Button(self.frame_buttons, text='Clear plot',
-            command=Clear_plot)
+            command=self.Clear_plot)
         self.button_clear.pack(side='right')
+
+
+    def Start_log(self, event=None):
+        '''Starts the logging'''
+        self.button_log['text'] = 'Stop log'
+        self.button_log['command'] = self.Stop_log
+        self.logging = self.button_log.after(10, self.Log)
+
+
+    def Stop_log(self, event=None):
+        '''Interrupts the logging'''
+        self.button_log['text'] = 'Start log'
+        self.button_log['command'] = self.Start_log
+        self.button_log.after_cancel(self.logging)
+        self.logging = None # Removes reference to logging event
+
+
+    def Change_time(self, event=None):
+        '''Change of logging interval, as option is selected from box'''
+        logger.info('Logging interval changed to: '+self.var_time.get())
+        self.time = self.dict_times[self.var_time.get()]
+        # Logs now and continues with new interval
+        if self.button_log['text'] == 'Stop log':
+            self.button_log.after_cancel(self.logging)
+            self.logging = self.button_log.after(10, self.Log)
+
+
+    def Log(self):
+        '''Actions to do for every log, and call next repetition'''
+        log = self.Update()
+
+        # Add to log file
+        self.Write_log(log)
+
+        # Add to plot lists
+        if not None in log: # Check if all values were read
+            self.x.append(log[0])
+            for i in range(self.y_len):
+                self.y[i].append(float(log[i+1][:-1])) # remove K at end
+                self.lines[i].set_ydata(self.y[i])
+                self.lines[i].set_xdata(self.x)
+            self.axes.relim()
+            self.axes.autoscale_view() 
+            if self.twin:
+                for i in range(self.y2_len):
+                    self.y2[i].append(float(log[i+1+self.y_len][:-1]))
+                    self.lines[i+self.y_len].set_ydata(self.y2[i])
+                    self.lines[i+self.y_len].set_xdata(self.x)
+                self.axes2.relim()
+                self.axes2.autoscale_view()
+            self.canvas.draw() # Redraw canvas
+
+        # Continue logging
+        self.logging = self.button_log.after(self.time, self.Log)
+
+        
+    def Clear_plot(self, event=None):
+        '''Clears all but the last point in the plot and replots'''
+        self.x = [self.x[-1]]
+        for i in range(self.y_len):
+            self.y[i] = [self.y[i][-1]]
+            self.lines[i].set_ydata(self.y[i])
+            self.lines[i].set_xdata(self.x)
+        self.axes.relim()
+        self.axes.autoscale_view() 
+        # Clear the twin
+        if self.twin:
+            for i in range(self.y2_len):
+                self.y2[i] = [self.y2[i][-1]]
+                self.lines[i+self.y_len].set_ydata(self.y2[i])
+                self.lines[i+self.y_len].set_xdata(self.x)
+            self.axes.relim()
+            self.axes.autoscale_view()
+
+        self.canvas.draw() # Redraw canvas
 
 
     def Write_log(self, log):

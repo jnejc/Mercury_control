@@ -465,7 +465,7 @@ class Sensors(tk.LabelFrame):
                 try:
                     line.append(float(i[:-1])) # Strip the % unit
                 except TypeError:
-                    line.append('') # Write empty line, if None
+                    line.append('') # Write empty string, if None
             writer.writerow(line)
 
         # Continue logging
@@ -475,8 +475,10 @@ class Sensors(tk.LabelFrame):
     def Update(self, fsensors):
         '''Updates values from iPS'''
         logger.info('Updating IPS sensor status: '+str(fsensors))
-        self.var_helium.set(float(fsensors[0][:-1]))
-        self.var_nitrogen.set(float(fsensors[1][:-1]))
+        try:
+            self.var_helium.set(float(fsensors[0][:-1]))
+            self.var_nitrogen.set(float(fsensors[1][:-1]))
+        except: pass
         # Use percentage values insetad
         self.var_resistance.set(fsensors[0])
         self.var_freq.set(fsensors[1])
