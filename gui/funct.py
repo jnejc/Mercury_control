@@ -2,7 +2,10 @@
 
 def Strip_T(string):
     '''Reformats the temperature string'''
-    return str(float(string[:-3]))
+    try:
+        return str(float(string[:-3]))
+    except TypeError:
+        return None
 
 
 def List_sensors(name, mercury):

@@ -57,6 +57,7 @@ class ITC_frame(tk.Frame):
         # Select sensor frame
         self.frame_sensor = Select(self, self.ports)
         self.frame_sensor.pack(side='top', fill='x', padx=5, pady=5)
+        self.var_sens = self.frame_sensor.var_sens
 
         # Load parameters
         self.button_load = ttk.Button(self, text='Load from iTC',
@@ -512,7 +513,7 @@ class Select(tk.Frame):
         # Select sensor frame
         self.list_sens = List_sensors('TEMP', self.ports.itc)
         self.var_sens = tk.StringVar(self)
-        self.parent.var_sens = self.var_sens # give var_sens to itc frame
+        #self.parent.var_sens = self.var_sens # give var_sens to itc frame
         self.var_sens.set(MAIN_SENSOR) # Default board
         self.combo_sens = ttk.Combobox(self, state='disabled',
             values=self.list_sens, textvar=self.var_sens, width=7)

@@ -341,7 +341,7 @@ class Ports():
 if __name__ == "__main__":
     '''Executes if this is main application'''
     print(List_ports())
-
+"""
     test = 0
     # Test particular port
     if test == 0:
@@ -369,5 +369,5 @@ if __name__ == "__main__":
         print(B.ips.M2.__dict__)
         print(B.ips.M1.read_options)
         B.ips.M1.Read_option('VOLT')
-
+"""
 

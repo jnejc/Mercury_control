@@ -132,6 +132,27 @@ class Log_plot(tk.Frame):
         self.axes.legend(self.lines, [line.get_label() for line in self.lines])
 
 
+    def Clear_plot(self, event=None):
+        '''Clears all but the last point in the plot and replots'''
+        self.x = [self.x[-1]]
+        for i in range(self.y_len):
+            self.y[i] = [self.y[i][-1]]
+            self.lines[i].set_ydata(self.y[i])
+            self.lines[i].set_xdata(self.x)
+        self.axes.relim()
+        self.axes.autoscale_view() 
+        # Clear the twin
+        if self.twin:
+            for i in range(self.y2_len):
+                self.y2[i] = [self.y2[i][-1]]
+                self.lines[i+self.y_len].set_ydata(self.y2[i])
+                self.lines[i+self.y_len].set_xdata(self.x)
+            self.axes.relim()
+            self.axes.autoscale_view()
+
+        self.canvas.draw() # Redraw canvas
+
+
     def Buttons(self):
         '''The logging control buttons'''
         # Buttons
@@ -211,27 +232,6 @@ class Log_plot(tk.Frame):
         # Continue logging
         self.logging = self.button_log.after(self.time, self.Log)
 
-        
-    def Clear_plot(self, event=None):
-        '''Clears all but the last point in the plot and replots'''
-        self.x = [self.x[-1]]
-        for i in range(self.y_len):
-            self.y[i] = [self.y[i][-1]]
-            self.lines[i].set_ydata(self.y[i])
-            self.lines[i].set_xdata(self.x)
-        self.axes.relim()
-        self.axes.autoscale_view() 
-        # Clear the twin
-        if self.twin:
-            for i in range(self.y2_len):
-                self.y2[i] = [self.y2[i][-1]]
-                self.lines[i+self.y_len].set_ydata(self.y2[i])
-                self.lines[i+self.y_len].set_xdata(self.x)
-            self.axes.relim()
-            self.axes.autoscale_view()
-
-        self.canvas.draw() # Redraw canvas
-
 
     def Write_log(self, log):
         '''Writes the log data into a log file'''
@@ -252,6 +252,61 @@ class Log_plot(tk.Frame):
                     except: # Try to strip unit
                         line.append(float(i[:-1]))
             writer.writerow(line)
+
+
+    def Import_log(self, start_time):
+        '''Imports the data from log files, to add to plots
+            start_time in datetime.datetime format'''
+        # Set up lists, dont use self as this is just internal to this import
+        file_list = list()
+        date_list = list()
+
+        for entry in os.scandir(self.file_directory):
+            if entry.is_file():
+                file_list.append(os.path.join(self.file_directory,
+                    entry.name))
+                date = entry.name.split('_')[0] # Get date string
+                date = datetime.datetime.strptime(date, '%Y%m%d').date()
+                date_list.append(date)
+
+        # Clear plot lists
+        self.x = []
+        self.y = [[] for i in range(self.y_len)]
+        if self.twin:
+            self.y2 = [[] for i in range(self.y2_len)]
+
+        # Open files and extract data
+        for i,file in enumerate(file_list):
+            # Find files with late enough dates
+            if start_time.date() <= date_list[i]:
+                with open(file, "r", newline='') as f:
+                    reader= csv.reader(f, delimeter=';')
+                    for row in reader:
+                        # Import into datetime format
+                        time = datetime.datetime.strptime(
+                            date_list[i]+row[0], '%Y%m%d%H:%M:%S')
+                        # Write values if time matches
+                        if time <= start_time:
+                            self.x.append(time)
+                            for j in range(self.y_len):
+                                self.y[j].append(float(row[j+1]))
+                            if self.twin:
+                                for j in range(self.y2_len):
+                                    self.y2[j].append(float(row[j+1+self.y_len]))
+        
+        # Replot
+        for i in range(self.y_len):
+            self.lines[i].set_ydata(self.y[i])
+            self.lines[i].set_xdata(self.x)
+        self.axes.relim()
+        self.axes.autoscale_view()
+        if self.twin:
+            for i in range(self.y2_len):
+                self.lines[i+self.y_len].set_ydata(self.y2[i])
+                self.lines[i+self.y_len].set_xdata(self.x)
+            self.axes2.relim()
+            self.axes2.autoscale_view()
+        self.canvas.draw()
 
 
 

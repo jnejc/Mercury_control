@@ -78,7 +78,8 @@ class Cryo_application(tk.Frame):
         # Find all files and remember dates
         for entry in os.scandir(self.file_directory):
             if entry.is_file():
-                self.file_list.append(os.path.join(self.file_directory, entry.name))
+                self.file_list.append(os.path.join(self.file_directory,
+                    entry.name))
                 self.date_list.append(entry.name.split('_')[0])
 
         # Set up the lists for data
@@ -93,8 +94,8 @@ class Cryo_application(tk.Frame):
                 reader = csv.reader(f, delimiter=';')
                 for row in reader:
                     # Import into datetime format
-                    d = datetime.datetime.strptime(self.date_list[i]+row[0],
-                        '%Y%m%d%H:%M:%S')
+                    d = datetime.datetime.strptime(
+                        self.date_list[i]+row[0], '%Y%m%d%H:%M:%S')
                     # Append the non empty entries, removing %
                     try:
                         self.y_he.append(float(row[1]))
