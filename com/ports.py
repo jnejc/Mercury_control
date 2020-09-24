@@ -24,7 +24,7 @@ class Comport():
     def __init__(self, port):
         '''Initializes comport'''
         self.name = port
-        self.ser = serial.Serial(port, timeout=PORT_TIMEOUT) # Fails if too short
+        self.ser = serial.Serial(port, timeout=PORT_TIMEOUT) # Fails if short
         self.ser.close()
 
 
@@ -40,7 +40,8 @@ class Comport():
     def __exit__(self, E_type, E_value, E_traceback):
         '''Closing of comport'''
         self.ser.close()
-        logger.info('Closing: "'+self.name+'", Errors:',(E_type,E_value,E_traceback))
+        logger.info('Closing: "'+self.name+'", Errors:',
+            (E_type,E_value,E_traceback))
         return (E_type,E_value,E_traceback)
 
 
@@ -273,9 +274,9 @@ class Ports():
         time = datetime.now()
         field = self.ips.__dict__[sens].Read_option('FLD', warn=False)
         field_set = self.ips.__dict__[sens].Read_option('FSET', warn=False)
-        persistent_field = self.ips.__dict__[sens].Read_option('PFLD', warn=False)
+        persist_field = self.ips.__dict__[sens].Read_option('PFLD', warn=False)
 
-        return(time, field_set, field, persistent_field)
+        return(time, field_set, field, persist_field)
 
 
     def Get_Fstatus(self, sens):

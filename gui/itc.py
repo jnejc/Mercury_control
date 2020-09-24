@@ -305,7 +305,8 @@ class Manual(tk.LabelFrame):
     '''Manual heater and flow control commands'''
     def __init__(self, parent, ports):
         '''Calls init method of LabelFrame and fills up frame'''
-        tk.LabelFrame.__init__(self, parent, text='Manual control', padx=10, pady=5)
+        tk.LabelFrame.__init__(self, parent, text='Manual control',
+            padx=10, pady=5)
         self.parent = parent
         self.ports = ports
         self.Widgets()
@@ -432,7 +433,8 @@ class Limits(tk.LabelFrame):
     '''Limits frame and inner objects'''
     def __init__(self, parent, ports):
         '''Calls init method of LabelFrame and fills up frame'''
-        tk.LabelFrame.__init__(self, parent, text='Heating limits', padx=10, pady=5)
+        tk.LabelFrame.__init__(self, parent, text='Heating limits',
+            padx=10, pady=5)
         self.parent = parent
         self.ports = ports
         self.Widgets()

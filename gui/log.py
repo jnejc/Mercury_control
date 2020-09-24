@@ -4,6 +4,7 @@
 import tkinter as tk    # Gui package
 from tkinter import ttk # Fancier widgets
 from tkinter import messagebox
+from tkinter import simpledialog # for string query, etc
 # Plotting
 import matplotlib
 matplotlib.use('TkAgg') # Selects tkinter backend
@@ -12,8 +13,8 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
 from matplotlib.figure import Figure
 # Logging
 import datetime # A format for dates and time
-import csv # For importing and exporting CSV files
-import os # For compiling directory paths
+import csv      # For importing and exporting CSV files
+import os       # For compiling directory paths
 
 import logging
 logger = logging.getLogger('log')     # Set the logger
@@ -49,6 +50,9 @@ class Log_plot(tk.Frame):
         self.parent = parent
         self.ports = ports
 
+        # Initiate daughter parameters
+        self.Set_params()
+
         # Set parameters
         self.y_len = len(self.y_list)
 
@@ -79,11 +83,12 @@ class Log_plot(tk.Frame):
 
     def Plot_setup(self):
         ''' Creates the plot and main settings'''
-        # Plot canvas
+        # Generate plot
         self.fig = Figure(figsize=(5,3), dpi=100)
         self.axes = self.fig.add_subplot(111)
-        #self.fig.subplots_adjust(bottom=0.16, left= 0.10, right=0.96, top=0.94)
+        #self.fig.subplots_adjust(bottom=0.16, left=0.10, right=0.96, top=0.94)
 
+        # Generate canvas and toolbar
         self.canvas = FigureCanvasTkAgg(self.fig, self)
         self.canvas.draw()
         self.toolbar = NavigationToolbar2Tk(self.canvas, self)
@@ -151,6 +156,13 @@ class Log_plot(tk.Frame):
             self.axes.autoscale_view()
 
         self.canvas.draw() # Redraw canvas
+        
+        """
+        # To also fix problems with autoscaling, destroy and rebuild all
+        self.canvas.get_tk_widget().destroy()
+        self.toolbar.destroy()
+        self.Plot_setup()
+        """
 
 
     def Buttons(self):
@@ -178,6 +190,11 @@ class Log_plot(tk.Frame):
             command=self.Clear_plot)
         self.button_clear.pack(side='right')
 
+        # Button Import log
+        self.button_import = ttk.Button(self.frame_buttons, text='Import log',
+            command=self.Set_import)
+        self.button_import.pack(side='right')
+
 
     def Start_log(self, event=None):
         '''Starts the logging'''
@@ -202,6 +219,32 @@ class Log_plot(tk.Frame):
         if self.button_log['text'] == 'Stop log':
             self.button_log.after_cancel(self.logging)
             self.logging = self.button_log.after(10, self.Log)
+
+    
+    def Set_import(self, event=None):
+        '''Button to set time and import data to log plot'''
+        # Try to get date input
+        try:
+            date = tk.simpledialog.askstring('Start date',
+                'Insert starting date, eg. 24.09.2020')
+            date = datetime.datetime.strptime(date, '%d.%m.%Y')
+        except: 
+            messagebox.showerror('Bad date format',
+                'Please insert date in same format as example')
+            return
+
+        # Try to get time input
+        try:
+            time = tk.simpledialog.askstring('Start time',
+                'Insert starting time, eg. 13:49:00')
+            time = datetime.datetime.strptime(time, '%H:%M:%S')
+        except:
+            messagebox.showerror('Bad time format',
+                'Please insert time in same format as example')
+            return
+
+        # Call import log function by combining inserted date and time
+        self.Import_log(datetime.datetime.combine(date.date(), time.time()))
 
 
     def Log(self):
@@ -280,19 +323,22 @@ class Log_plot(tk.Frame):
             # Find files with late enough dates
             if start_time.date() <= date_list[i]:
                 with open(file, "r", newline='') as f:
-                    reader= csv.reader(f, delimeter=';')
+                    reader= csv.reader(f, delimiter=';')
                     for row in reader:
                         # Import into datetime format
-                        time = datetime.datetime.strptime(
-                            date_list[i]+row[0], '%Y%m%d%H:%M:%S')
+                        time = datetime.datetime.strptime(row[0], '%H:%M:%S')
+                        time = datetime.datetime.combine(
+                            date_list[i], time.time())
                         # Write values if time matches
-                        if time <= start_time:
-                            self.x.append(time)
-                            for j in range(self.y_len):
-                                self.y[j].append(float(row[j+1]))
-                            if self.twin:
-                                for j in range(self.y2_len):
-                                    self.y2[j].append(float(row[j+1+self.y_len]))
+                        if time >= start_time:
+                            if '' not in row:
+                                self.x.append(time)
+                                for j in range(self.y_len):
+                                    self.y[j].append(float(row[j+1]))
+                                if self.twin:
+                                    for j in range(self.y2_len):
+                                        self.y2[j].append(
+                                            float(row[j+1+self.y_len]))
         
         # Replot
         for i in range(self.y_len):
@@ -309,20 +355,28 @@ class Log_plot(tk.Frame):
         self.canvas.draw()
 
 
+    def Update(self):
+        '''Has to be defined in daughter, depending on the type of log'''
+        return []
+
+    
+    def Set_params(self):
+        '''Params should be evalued in the daughter class'''
+        self.device = None
+        self.title = None
+        self.y_axis = None
+        self.y_list = list()
+        self.file_end = None
+        self.file_directory = None
+        self.twin = None
+        self.y2_list = list()
+
+
 
 class Field_plot(Log_plot):
     '''Inherits the Log plot framwork and holds Field plot specifics'''
     def __init__(self, parent, ports):
-        '''Adds the field frame specifics, then initializes the log plot'''
-        self.device = 'ips'
-        self.title = 'Field log'
-        self.y_axis = 'Field (T)'
-        self.y_list = ['Set F', 'Current F', 'Peristent F']
-        self.file_end = '_Field.log'
-        self.file_directory = os.path.join('log_files','field')
-
-        self.twin = False
-
+        '''Initializes the log plot'''
         Log_plot.__init__(self, parent, ports)
 
 
@@ -333,23 +387,24 @@ class Field_plot(Log_plot):
         logger.debug(flog)
         return flog
 
+    
+    def Set_params(self):
+        '''Sets the params for the field plot'''
+        self.device = 'ips'
+        self.title = 'Field log'
+        self.y_axis = 'Field (T)'
+        self.y_list = ['Set F', 'Current F', 'Peristent F']
+        self.file_end = '_Field.log'
+        self.file_directory = os.path.join('log_files','field')
+
+        self.twin = False
+
 
 
 class Temperature_plot(Log_plot):
     '''Inherits the Log plot framwork and holds Field plot specifics'''
     def __init__(self, parent, ports):
-        '''Adds the field frame specifics, then initializes the log plot'''
-        self.device = 'itc'
-        self.title = 'Temperature log'
-        self.y_axis = 'Temperature (K)'
-        self.y_list = ['Set T', 'Current T']
-        self.file_end = '_Temp.log'
-        self.file_directory = os.path.join('log_files','temperature')
-
-        # Add second axis plot
-        self.twin = True
-        self.y2_list = ['Probe T']
-
+        '''Initializes the log plot'''
         Log_plot.__init__(self, parent, ports)
         
     
@@ -361,4 +416,17 @@ class Temperature_plot(Log_plot):
         return tlog
 
 
-        
+    def Set_params(self):
+        '''Sets the params for the temperature plot'''
+        self.device = 'itc'
+        self.title = 'Temperature log'
+        self.y_axis = 'Temperature (K)'
+        self.y_list = ['Set T', 'Current T']
+        self.file_end = '_Temp.log'
+        self.file_directory = os.path.join('log_files','temperature')
+
+        # Add second axis plot
+        self.twin = True
+        self.y2_list = ['Probe T']
+
+

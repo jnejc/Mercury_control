@@ -76,7 +76,8 @@ class IPS_frame(tk.Frame):
 
     def Load_parameters(self):
         '''Talks to IPS and refreshes all values in entry boxes'''
-        logger.info('Loading IPS parameters from:'+ self.frame_select.var_sens.get())
+        logger.info('Loading IPS parameters from:'+
+            self.frame_select.var_sens.get())
 
         flog = self.ports.Get_Fstatus(self.frame_select.var_sens.get())
         fset = self.ports.Get_Fset(self.frame_select.var_sens.get())
@@ -239,8 +240,8 @@ class Switch(tk.LabelFrame):
     '''Switch heater frame and inner objects'''
     def __init__(self, parent, ports):
         '''Calls init method of LabelFrame and fills up frame'''
-        tk.LabelFrame.__init__(self, parent, text='Switch heater mode', padx=10,
-            pady=5)
+        tk.LabelFrame.__init__(self, parent, text='Switch heater mode',
+            padx=10, pady=5)
         self.parent = parent
         self.ports = ports
         self.Widgets()
@@ -274,8 +275,10 @@ class Switch(tk.LabelFrame):
         sens = self.parent.frame_select.var_sens.get()
         value = self.list_switch[self.var_switch.get()]
         # Get PSU and magnet fields for safety check
-        field_psu = self.ports.ips.__dict__[sens].Read_option('FLD', warn=False)
-        field_pers = self.ports.ips.__dict__[sens].Read_option('PFLD', warn=False)
+        field_psu = self.ports.ips.__dict__[sens].Read_option(
+            'FLD', warn=False)
+        field_pers = self.ports.ips.__dict__[sens].Read_option(
+            'PFLD', warn=False)
         field_psu = float(field_psu[:-1])
         field_pers = float(field_pers[:-1])
         if abs(field_psu-field_pers) > SWITCH_TOLERANCE:
