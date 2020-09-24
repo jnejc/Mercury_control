@@ -145,18 +145,18 @@ class Log_plot(tk.Frame):
             self.lines[i].set_ydata(self.y[i])
             self.lines[i].set_xdata(self.x)
         self.axes.relim()
-        self.axes.autoscale_view() 
+        self.axes.autoscale() # Enables autoscale for axes
         # Clear the twin
         if self.twin:
             for i in range(self.y2_len):
                 self.y2[i] = [self.y2[i][-1]]
                 self.lines[i+self.y_len].set_ydata(self.y2[i])
                 self.lines[i+self.y_len].set_xdata(self.x)
-            self.axes.relim()
-            self.axes.autoscale_view()
+            self.axes2.relim()
+            self.axes2.autoscale()
 
         self.canvas.draw() # Redraw canvas
-        
+
         """
         # To also fix problems with autoscaling, destroy and rebuild all
         self.canvas.get_tk_widget().destroy()
@@ -195,6 +195,11 @@ class Log_plot(tk.Frame):
             command=self.Set_import)
         self.button_import.pack(side='right')
 
+        # Button Autoscale
+        self.button_autoscale = ttk.Button(self.frame_buttons,
+            text='Autoscale', command=self.Autoscale)
+        self.button_autoscale.pack(side='right')
+
 
     def Start_log(self, event=None):
         '''Starts the logging'''
@@ -219,6 +224,14 @@ class Log_plot(tk.Frame):
         if self.button_log['text'] == 'Stop log':
             self.button_log.after_cancel(self.logging)
             self.logging = self.button_log.after(10, self.Log)
+
+
+    def Autoscale(self, event=None):
+        '''Button function to reenable autoscaling'''
+        self.axes.autoscale()
+        if self.twin:
+            self.axes2.autoscale()
+        self.canvas.draw()
 
     
     def Set_import(self, event=None):
@@ -345,13 +358,13 @@ class Log_plot(tk.Frame):
             self.lines[i].set_ydata(self.y[i])
             self.lines[i].set_xdata(self.x)
         self.axes.relim()
-        self.axes.autoscale_view()
+        self.axes.autoscale()
         if self.twin:
             for i in range(self.y2_len):
                 self.lines[i+self.y_len].set_ydata(self.y2[i])
                 self.lines[i+self.y_len].set_xdata(self.x)
             self.axes2.relim()
-            self.axes2.autoscale_view()
+            self.axes2.autoscale()
         self.canvas.draw()
 
 
