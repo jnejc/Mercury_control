@@ -200,6 +200,12 @@ class Log_plot(tk.Frame):
             text='Autoscale', command=self.Autoscale)
         self.button_autoscale.pack(side='right')
 
+        # Button Fix scale
+        if self.twin:
+            self.button_fixscale = ttk.Button(self.frame_buttons,
+                text='Fix scale', command=self.Fixscale)
+            self.button_fixscale.pack(side='right')
+
 
     def Start_log(self, event=None):
         '''Starts the logging'''
@@ -231,6 +237,13 @@ class Log_plot(tk.Frame):
         self.axes.autoscale()
         if self.twin:
             self.axes2.autoscale()
+        self.canvas.draw()
+
+
+    def Fixscale(self, event=None):
+        '''Button that fixes right scale to left'''
+        logger.debug('Setting both y axes to same')
+        self.axes2.set_ylim(self.axes.get_ylim())
         self.canvas.draw()
 
     
