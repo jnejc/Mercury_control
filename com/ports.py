@@ -8,6 +8,9 @@ from tkinter import messagebox
 from com.devices import Device
 from datetime import datetime
 
+# Get strip function
+from gui.funct import Strip_T
+
 import logging
 logger = logging.getLogger('log')     # Set the logger
 
@@ -57,12 +60,13 @@ class Comport():
 
     def Exchange(self, string, str_len=READ_LEN, warn=True):
         '''Talks to comport device uscing SCPI, prints, returns string'''
+        logger.info('>>>' + string)
         print('>>>' + string)
         self.ser.open()
         self.ser.write((string + '\n').encode(ENC))
         x = self.ser.read(str_len)
         self.ser.close()
-        #logger.debug(x)
+        logger.info('<<<' + x)
         x = x.decode(ENC).rstrip()
         print('<<<' + x)
 
@@ -228,10 +232,35 @@ class Ports():
     def Set_Tset(self, sens, values):
         '''Sets the parameters from the set frame
             values: (setpoint, ramp, ramp_enable)'''
+
+        # When enabling ramp
+        if values[2] == 'ON':
+            # Check if current temperature is close to previous set point
+            prev_setpoint = self.itc.__dict__[sens].Read_option('TSET')
+            curr_temp = self.itc.__dict__[sens].Read_option('TEMP')
+            # Strip units
+            prev_setpoint = prev_setpoint[:-3]
+            curr_temp = curr_temp[:-3]
+            # Calculate difference
+            new_ramp_rate = float(ramp)
+            diff = abs(float(curr_temp) - float(prev_setpoint))
+
+            if diff > new_ramp_rate:
+                # Errors
+                msg = '''The temperature has not reached previous setpoint.\n
+                    Ramping from current temperature to new set point!'''
+                messagebox.showerror('Ramping error', msg)
+                logger.error('Temperature is not same as previous setpoint')
+
+                # Change setpoint instantly to current temp, start ramping:
+                self.itc.__dict__[sens].Set_option('RENA', 'OFF')   # Ramp off
+                self.itc.__dict__[sens].Set_option('TSET', curr_temp)
+                # Continue by setting given: ramp on, ramp rate, new temp
+        
         # First ramp rates, then temperature!
         # Check for errors. Probably can be omitted and done lower
         if not self.itc.__dict__[sens].Set_option('RENA', values[2]):
-            logger.error('Failed to set ramp rate to '+values[2])
+            logger.error('Failed to set ramp to '+values[2])
         if not self.itc.__dict__[sens].Set_option('RSET', values[1]):
             logger.error('Failed to set ramp rate to '+values[1])
         if not self.itc.__dict__[sens].Set_option('TSET', values[0]):

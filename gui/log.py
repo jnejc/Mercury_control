@@ -203,7 +203,7 @@ class Log_plot(tk.Frame):
         # Button Fix scale
         if self.twin:
             self.button_fixscale = ttk.Button(self.frame_buttons,
-                text='Fix scale', command=self.Fixscale)
+                text='Fixed y', command=self.Fixscale)
             self.button_fixscale.pack(side='right')
 
 
