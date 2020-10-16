@@ -157,13 +157,6 @@ class Log_plot(tk.Frame):
 
         self.canvas.draw() # Redraw canvas
 
-        """
-        # To also fix problems with autoscaling, destroy and rebuild all
-        self.canvas.get_tk_widget().destroy()
-        self.toolbar.destroy()
-        self.Plot_setup()
-        """
-
 
     def Buttons(self):
         '''The logging control buttons'''
@@ -243,8 +236,26 @@ class Log_plot(tk.Frame):
     def Fixscale(self, event=None):
         '''Button that fixes right scale to left'''
         logger.debug('Setting both y axes to same')
+        # Not working yet
+        """
+        # Find max and min
+        y_min = min(self.axes.get_ylim()[0], self.axes2.get_ylim()[0])
+        y_max = max(self.axes.get_ylim()[1], self.axes2.get_ylim()[1])
+        diff = y_min-y_max
+        # Apply to both
+        self.axes.set_ylim((y_min, y_max))
+        self.axes2.set_ylim((y_min, y_max))
+        # Fix margins
+        #self.axes.autoscale_view() 
+        #self.axes2.autoscale_view() 
+        self.axes.relim()
+        self.axes2.relim()
+        """
+        # Doesnt work well if twins are too far apart
         self.axes2.set_ylim(self.axes.get_ylim())
+        # Redraw canvas
         self.canvas.draw()
+
 
     
     def Set_import(self, event=None):

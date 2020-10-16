@@ -209,7 +209,7 @@ class SetT(tk.LabelFrame):
             self.var_rate.get(),
             'ON' if self.var_ramp.get() else 'OFF'
             ]
-        logger.debug(values)
+        logger.info('Setting iTC values: ' + str(values))
         self.ports.Set_Tset(self.parent.var_sens.get(), values)
 
     

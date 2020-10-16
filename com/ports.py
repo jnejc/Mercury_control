@@ -60,14 +60,14 @@ class Comport():
 
     def Exchange(self, string, str_len=READ_LEN, warn=True):
         '''Talks to comport device uscing SCPI, prints, returns string'''
-        logger.info('>>>' + string)
+        #logger.info('>>>' + string)
         print('>>>' + string)
         self.ser.open()
         self.ser.write((string + '\n').encode(ENC))
         x = self.ser.read(str_len)
         self.ser.close()
-        logger.info('<<<' + x)
         x = x.decode(ENC).rstrip()
+        #logger.info('<<<' + x)
         print('<<<' + x)
 
         # Check for errors:
@@ -229,9 +229,10 @@ class Ports():
         return(setpoint, ramp, ramp_enable)
 
 
-    def Set_Tset(self, sens, values):
+    def Set_Tset(self, sens, values, query=True):
         '''Sets the parameters from the set frame
-            values: (setpoint, ramp, ramp_enable)'''
+            values: (setpoint, ramp, ramp_enable)
+            query=True Asks to confirm set values'''
 
         # When enabling ramp
         if values[2] == 'ON':
@@ -242,7 +243,7 @@ class Ports():
             prev_setpoint = prev_setpoint[:-3]
             curr_temp = curr_temp[:-3]
             # Calculate difference
-            new_ramp_rate = float(ramp)
+            new_ramp_rate = float(values[1])
             diff = abs(float(curr_temp) - float(prev_setpoint))
 
             if diff > new_ramp_rate:
@@ -252,18 +253,20 @@ class Ports():
                 messagebox.showerror('Ramping error', msg)
                 logger.error('Temperature is not same as previous setpoint')
 
+                # Make it go faster
+                query = False
                 # Change setpoint instantly to current temp, start ramping:
-                self.itc.__dict__[sens].Set_option('RENA', 'OFF')   # Ramp off
-                self.itc.__dict__[sens].Set_option('TSET', curr_temp)
+                self.itc.__dict__[sens].Set_option('RENA', 'OFF', query)
+                self.itc.__dict__[sens].Set_option('TSET', curr_temp, query)
                 # Continue by setting given: ramp on, ramp rate, new temp
         
         # First ramp rates, then temperature!
         # Check for errors. Probably can be omitted and done lower
-        if not self.itc.__dict__[sens].Set_option('RENA', values[2]):
+        if not self.itc.__dict__[sens].Set_option('RENA', values[2], query):
             logger.error('Failed to set ramp to '+values[2])
-        if not self.itc.__dict__[sens].Set_option('RSET', values[1]):
+        if not self.itc.__dict__[sens].Set_option('RSET', values[1], query):
             logger.error('Failed to set ramp rate to '+values[1])
-        if not self.itc.__dict__[sens].Set_option('TSET', values[0]):
+        if not self.itc.__dict__[sens].Set_option('TSET', values[0], query):
             logger.error('Failed to set T to '+values[0])
     
 
