@@ -18,7 +18,7 @@ logger = logging.getLogger('log')     # Set the logger
 READ_LEN = 200
 ENC = 'utf-8'
 APP_NAME = 'Mercury'
-PORT_TIMEOUT = 0.2
+PORT_TIMEOUT = 0.3
 
 
 
