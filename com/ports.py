@@ -51,8 +51,8 @@ class Comport():
     def Identify(self):
         '''Sends the '*IDN?' command to comport and checks response'''
         self.ser.open()
-        self.ser.write('*IDN?\n'.encode('utf-8'))
-        x = self.ser.read(READ_LEN).decode('utf-8')
+        self.ser.write('*IDN?\n'.encode(ENC))
+        x = self.ser.read(READ_LEN).decode(ENC)
         self.ser.close()
         logger.info(self.name + ': ' + x.rstrip())
         return x
