@@ -1,0 +1,29 @@
+### Information on how to set up the environment for editing, developing and running the code of this project
+
+- Install python (3.7.3)
+
+Find the (Windows x86-64) version on https://www.python.org/
+During installation enable the pip install feature and add python to path
+
+- Install pipenv
+
+Use command prompt to run "pip install pipenv"
+
+- Install git
+
+Download and install git from https://git-scm.com/
+
+- Install Visual Studio Code
+
+Download the lastest version from https://code.visualstudio.com/ and install it
+Install the Python (3.7.3) extension
+
+- Connect the project from GitHub:
+
+Create a directory for this project (\\NMR16).
+In Visual Studio Code, sect File -> Add Folder to Workspace -> Select the newly created directory
+Select Terminal Window
+In the window, type:
+git config --global user.name <github userID>
+git clone https://github.com/jnejc/NMR16.git
+
