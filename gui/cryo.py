@@ -64,6 +64,10 @@ class Cryo_application(tk.Frame):
         self.axes.plot(self.x_he, self.y_he, 'o-', label='He level')
         self.axes.plot(self.x_n2, self.y_n2, 'o-', label='N2 level')
 
+        # Set default x limits.
+        _last_point = max(self.x_he[-1], self.x_n2[-1])
+        self.axes.set_xlim(_last_point - datetime.timedelta(days=10), _last_point)
+
         # Add legends
         self.axes.legend()
 
@@ -113,3 +117,10 @@ class Cryo_application(tk.Frame):
             for xx in self.x_n2]
 
 
+if __name__ == '__main__':
+    # Run in VSC as 
+    # C:\Python\projects\Mercury_control> pipenv run .\gui\cryo.py
+    # For testing just the cryo view.
+    cryo_window = tk.Tk()
+    Cryo_application(cryo_window)
+    cryo_window.mainloop()
