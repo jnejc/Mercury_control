@@ -482,7 +482,7 @@ class Sensors(tk.LabelFrame):
             self.var_helium.set(float(fsensors[0][:-1]))
             self.var_nitrogen.set(float(fsensors[1][:-1]))
         except: pass
-        # Use percentage values insetad
+        # Use percentage values instead
         self.var_resistance.set(fsensors[0])
         self.var_freq.set(fsensors[1])
         #self.var_resistance.set(fsensors[2])
