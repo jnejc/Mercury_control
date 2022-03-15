@@ -61,12 +61,12 @@ class Cryo_application(tk.Frame):
         self.Import_data()
 
         # Add traces
-        self.axes.plot(self.x_he, self.y_he, 'o-', label='He level')
-        self.axes.plot(self.x_n2, self.y_n2, 'o-', label='N2 level')
+        self.line_he, = self.axes.plot(self.x_he, self.y_he, 'o-', label='He level')
+        self.line_n2, = self.axes.plot(self.x_n2, self.y_n2, 'o-', label='N2 level')
 
         # Set default x limits.
         _last_point = max(self.x_he[-1], self.x_n2[-1])
-        self.axes.set_xlim(_last_point - datetime.timedelta(days=10), _last_point)
+        self.axes.set_xlim(_last_point - datetime.timedelta(days=10), _last_point + datetime.timedelta(days=1)) # this upper limit is temporary. TODO make this change in updating of the cryo plot.
 
         # Add legends
         self.axes.legend()
@@ -116,11 +116,30 @@ class Cryo_application(tk.Frame):
         self.xx_n2 = [(xx-self.x_n2[0]).total_seconds()/3600
             for xx in self.x_n2]
 
+    def Update(self, timestamp, he_level, n2_level):
+        """
+        Updates the cryo plot with one datapoint.
+        TODO: 
+         - Allow adding only N2 or He point, without the other.
+         - Possibly allow adding an array of data.
+        """
+        self.x_he.append(timestamp)
+        self.y_he.append(he_level)
+        self.x_n2.append(timestamp)
+        self.y_n2.append(n2_level)
+        self.line_he.set_xdata(self.x_he)
+        self.line_he.set_ydata(self.y_he)
+        self.line_n2.set_xdata(self.x_n2)
+        self.line_n2.set_ydata(self.y_n2)
 
-if __name__ == '__main__':
+        self.canvas.draw() # Redraw canvas
+
+
+if __name__ == '__main__' and 0:
     # Run in VSC as 
     # C:\Python\projects\Mercury_control> pipenv run .\gui\cryo.py
     # For testing just the cryo view.
-    cryo_window = tk.Tk()
+    # even with __name__ == '__main__', this still runs from main. Don't know why.
+    cryo_window = tk.Tk("test")
     Cryo_application(cryo_window)
     cryo_window.mainloop()

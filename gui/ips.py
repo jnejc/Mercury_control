@@ -6,6 +6,7 @@ from tkinter import ttk # Fancier widgets
 from tkinter import messagebox
 
 from gui.funct import Strip_T, List_sensors
+#from gui.cryo import Cryo_application
 
 # Logging
 import datetime # A format for dates and time
@@ -485,11 +486,18 @@ class Sensors(tk.LabelFrame):
         # Use percentage values instead
         self.var_resistance.set(fsensors[0])
         self.var_freq.set(fsensors[1])
+        
+        try:
+            self.parent.parent.menu.cryo_app.Update(datetime.datetime.now(), float(fsensors[0][:-1]), float(fsensors[1][:-1]))
+        except Exception as e:
+            pass # usual error is that the cryo log does not exist. 
+            # print("Updating cryo log failed with error", e) # for debuging
+        #Cryo_application.Update(Cryo_application, datetime.datetime.timestamp(datetime.datetime.now()), float(fsensors[0][:-1]), float(fsensors[1][:-1]))
+
         #self.var_resistance.set(fsensors[2])
         #self.var_freq.set(fsensors[3])
         # Temperature sensor not used yet
         #self.var_temp.set(fsensors[4])
-
 
 
 class Select(tk.Frame):
