@@ -111,7 +111,6 @@ class Menu(tk.Menu):
         '''Opens cyogen log in separate window'''
         cryo_window = tk.Toplevel(self.root)
         self.cryo_app = Cryo_application(cryo_window)
-        print("Cryo log is of type", self.cryo_app, type(self.cryo_app), self.root)
 
 
 

@@ -6,7 +6,6 @@ from tkinter import ttk # Fancier widgets
 from tkinter import messagebox
 
 from gui.funct import Strip_T, List_sensors
-#from gui.cryo import Cryo_application
 
 # Logging
 import datetime # A format for dates and time
@@ -498,6 +497,7 @@ class Sensors(tk.LabelFrame):
         #self.var_freq.set(fsensors[3])
         # Temperature sensor not used yet
         #self.var_temp.set(fsensors[4])
+
 
 
 class Select(tk.Frame):
