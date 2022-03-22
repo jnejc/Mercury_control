@@ -11,6 +11,9 @@ from gui.log import Log_frame
 
 import logging
 logger = logging.getLogger('log')     # Set the logger
+logging.basicConfig(
+    format="[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s",
+    datefmt="%d/%b/%Y %H:%M:%S") # Better logging format. Most importantly, it shows the timestamp.
 
 # Popup windows
 from nmr.gui import main
